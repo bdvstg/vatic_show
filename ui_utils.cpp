@@ -6,10 +6,10 @@ cv::Rect mouseRoi(const cv::Rect & target)
 {
     cv::Point tl = target.tl();
     cv::Point br = target.br();
-    tl.x -= 10;
-    tl.y -= 10;
-    br.x += 10;
-    br.y += 10;
+    tl.x -= 20;
+    tl.y -= 20;
+    br.x += 20;
+    br.y += 20;
 
     cv::Rect roi = cv::Rect(tl, br);
     return roi;
