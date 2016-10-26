@@ -6,21 +6,21 @@
 
 typedef struct vatic_object_
 {
-	std::string name;
-	int xmax;
-	int xmin;
-	int ymax;
-	int ymin;
-	int difficult;
-	int occluded;
-	std::string pose;
-	int truncated;
+    std::string name;
+    int xmax;
+    int xmin;
+    int ymax;
+    int ymin;
+    int difficult;
+    int occluded;
+    std::string pose;
+    int truncated;
 } vatic_object;
 
 std::vector<vatic_object> xml_vatic_pascal_parse(std::wstring filename);
 
 void xml_vatic_pascal_modifyObjects(std::wstring filename,
-	const std::vector<vatic_object> &objs);
+    const std::vector<vatic_object> &objs);
 
 #endif
 
