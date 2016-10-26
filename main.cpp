@@ -21,7 +21,7 @@ int gFrameNum; // amount of total files, will equal gAllFilenames.size()
 int gCurFrame; // current is nth file
 
 void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs);
-void update();
+void updateData();
 
 cv::Rect toRect(const vatic_object &obj)
 {
@@ -30,13 +30,72 @@ cv::Rect toRect(const vatic_object &obj)
     return cv::Rect(tl, br);
 }
 
+typedef enum {
+    adjObj_Absolute = 0,
+    adjObj_Relative = 1,
+} adjObj_Method;
+void adjObj(vatic_object &obj, const RECT_DIR dir,
+    const cv::Point &shift, adjObj_Method method = adjObj_Absolute)
+{
+    if (method == adjObj_Absolute)
+    {
+        if (dir == RECT_UP)
+        {
+            obj.ymin = shift.y;
+        }
+        else if (dir == RECT_DOWN)
+        {
+            obj.ymax = shift.y;
+        }
+        else if (dir == RECT_LEFT)
+        {
+            obj.xmin = shift.x;
+        }
+        else if (dir == RECT_RIGHT)
+        {
+            obj.xmax = shift.x;
+        }
+        else if (dir == RECT_CENTER)
+        {
+
+        }
+    }
+    else if (method == adjObj_Relative)
+    {
+        if (dir == RECT_UP)
+        {
+            obj.ymin += shift.y;
+        }
+        else if (dir == RECT_DOWN)
+        {
+            obj.ymax += shift.y;
+        }
+        else if (dir == RECT_LEFT)
+        {
+            obj.xmin += shift.x;
+        }
+        else if (dir == RECT_RIGHT)
+        {
+            obj.xmax += shift.x;
+        }
+        else if (dir == RECT_CENTER)
+        {
+
+        }
+    }
+}
+
 std::atomic<bool> mouseLeftBtnDown = false;
 void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, void* param = 0)
 {
-    if(event == CV_EVENT_LBUTTONDOWN)
+    if (event == CV_EVENT_LBUTTONDOWN)
         mouseLeftBtnDown = true;
-    if (event == CV_EVENT_LBUTTONUP)
+    else if (event == CV_EVENT_LBUTTONUP)
         mouseLeftBtnDown = false;
+    else if (event == CV_EVENT_MOUSEMOVE);
+    else if (event == -65535);
+    else
+        printf("onMouse: %d\n", event);
 
     cv::Rect bndbox;
     bool drawCurObj = false;
@@ -63,26 +122,7 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
                     || event == CV_EVENT_LBUTTONUP
                     || event == CV_EVENT_MOUSEMOVE))
             {
-                if (dir == RECT_UP)
-                {
-                    targetObj.ymin = y;
-                }
-                else if (dir == RECT_DOWN)
-                {
-                    targetObj.ymax = y;
-                }
-                else if (dir == RECT_LEFT)
-                {
-                    targetObj.xmin = x;
-                }
-                else if (dir == RECT_RIGHT)
-                {
-                    targetObj.xmax = x;
-                }
-                else if (dir == RECT_CENTER)
-                {
-
-                }
+                adjObj(targetObj, dir, mousePos, adjObj_Absolute);
                 bndbox = toRect(targetObj);
             }
             line = rectLine(bndbox, dir);
@@ -139,7 +179,7 @@ void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs)
     }
 }
 
-void update()
+void updateData()
 {
     const std::wstring xml_name = folder + path_xml + gAllFilenames[gCurFrame];
     std::wstring imgfile = gAllFilenames[gCurFrame];
@@ -168,7 +208,7 @@ int main(int argc, char **argv)
     cv::imshow("img", dummy);
     cv::setMouseCallback("img", onMouse);
 
-    update();
+    updateData();
     cv::imshow("img", gImg); cv::waitKey(1);
     while(true)
     {
@@ -184,7 +224,7 @@ int main(int argc, char **argv)
         {
             gCurFrame--;
             if (gCurFrame < 0) gCurFrame = 0;
-            update();
+            updateData();
             if (gCurObj < 0) gCurObj = 0;
             if (gCurObj >= gObjs.size()) gCurObj = gObjs.size() - 1;
             cv::imshow("img", gImg); cv::waitKey(1);
@@ -193,7 +233,7 @@ int main(int argc, char **argv)
         {
             gCurFrame++;
             if (gCurFrame >= gFrameNum) gCurFrame = gFrameNum - 1;
-            update();
+            updateData();
             if (gCurObj < 0) gCurObj = gObjs.size() - 1;
             if (gCurObj >= gObjs.size()) gCurObj = 0;
             cv::imshow("img", gImg); cv::waitKey(1);
@@ -216,6 +256,26 @@ int main(int argc, char **argv)
             gCurObj--;
             if (gCurObj < 0) gCurObj = gObjs.size() - 1;
             if (gCurObj >= gObjs.size()) gCurObj = 0;
+            onMouse();
+        }
+        else if (key == CV_KEY_NUMPAD_8)
+        {
+            adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(0,-1), adjObj_Relative);
+            onMouse();
+        }
+        else if (key == CV_KEY_NUMPAD_2)
+        {
+            adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(0, 1), adjObj_Relative);
+            onMouse();
+        }
+        else if (key == CV_KEY_NUMPAD_4)
+        {
+            adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(-1, 0), adjObj_Relative);
+            onMouse();
+        }
+        else if (key == CV_KEY_NUMPAD_6)
+        {
+            adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(1, 0), adjObj_Relative);
             onMouse();
         }
         else
