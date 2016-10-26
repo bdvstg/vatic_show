@@ -7,42 +7,57 @@
 #include <chrono>
 #include "cv_key_table.h"
 #include "ui_utils.h"
+#include <atomic>
 
 const std::wstring path_xml = L"\\Annotations\\";
 const std::wstring path_img = L"\\JPEGImages\\";
 std::wstring folder;
-std::vector<vatic_object> objs;
-int curObj = 0;
-RECT_DIR curObjSide = RECT_NONE;
-cv::Mat img;
+std::vector<vatic_object> gObjs;
+int gCurObj = 0;
+RECT_DIR gCurObjSide = RECT_NONE;
+cv::Mat gImg;
 
+cv::Rect toRect(const vatic_object &obj)
+{
+    const cv::Point tl(obj.xmin, obj.ymin);
+    const cv::Point br(obj.xmax, obj.ymax);
+    return cv::Rect(tl, br);
+}
+
+std::atomic<bool> mouseLeftBtnDown = false;
 void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, void* param = 0)
-{//CV_EVENT_LBUTTONDOWN
-    cv::Mat draw = img.clone();
+{
+    if(event == CV_EVENT_LBUTTONDOWN)
+        mouseLeftBtnDown = true;
+    if (event == CV_EVENT_LBUTTONUP)
+        mouseLeftBtnDown = false;
+
+    cv::Mat draw = gImg.clone();
     cv::circle(draw, cv::Point(x, y), 3, cv::Scalar(255, 0, 0), -1);
-    if (curObj >= 0 && curObj < objs.size())
+    if (gCurObj >= 0 && gCurObj < gObjs.size())
     {// curObj is valid
-        const vatic_object & obj = objs[curObj];
-        const cv::Point tl(obj.xmin, obj.ymin);
-        const cv::Point br(obj.xmax, obj.ymax);
-        const cv::Rect bndbox = cv::Rect(tl, br);
+        // draw current bndBox
+        cv::Rect bndbox = toRect(gObjs[gCurObj]);
         cv::rectangle(draw, bndbox, cv::Scalar(200, 0, 200), 3);
 
         cv::Point mousePos = cv::Point(x, y);
         if (mouseRoi(bndbox).contains(mousePos))
         {// mouse in ROI of bndbox, should be handle
             const RECT_DIR dir = rectDir(bndbox, mousePos);
+
+            // draw current bndBox's selected side
             Lint_t line = rectLine(bndbox, dir);
             if (dir == RECT_CENTER)
                 cv::circle(draw, line.p1, 5, cv::Scalar(255, 255, 0), -1);
             else
                 cv::line(draw, line.p1, line.p2, cv::Scalar(255, 255, 0), 3);
-            curObjSide = dir;
+            // update 
+            gCurObjSide = dir;
         }
         else
-            curObjSide = RECT_NONE;
+            gCurObjSide = RECT_NONE;
     }
-    cv::imshow("img", draw);
+    cv::imshow("gImg", draw);
 }
 
 void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs)
@@ -71,7 +86,7 @@ void update(cv::Mat &img, std::vector<vatic_object> &objs, const std::wstring & 
 
 	objs = xml_vatic_pascal_parse(xml_name);
 	std::vector<char> imgBuf = ReadFile(img_name.c_str());
-	img = cv::imdecode(imgBuf, 1);
+    img = cv::imdecode(imgBuf, 1);
 	
 	cv::putText(img, w2mb(xmlfilename.c_str()), cv::Point(5, 20), 0, 0.8, cv::Scalar(30, 200, 30), 2);
 	draw_vaticObjs(img, objs);
@@ -89,8 +104,8 @@ int main(int argc, char **argv)
 	cv::imshow("img", dummy);
 	cv::setMouseCallback("img", onMouse);
 
-	update(img, objs, xmlfiles[0]);
-	cv::imshow("img", img); cv::waitKey(1);
+	update(gImg, gObjs, xmlfiles[0]);
+	cv::imshow("img", gImg); cv::waitKey(1);
 	while(true)
 	{
 		 cv::waitKey(1);
@@ -105,38 +120,38 @@ int main(int argc, char **argv)
 		{
             curFrame--;
 			if (curFrame < 0) curFrame = 0;
-			update(img, objs, xmlfiles[curFrame]);
-			if (curObj < 0) curObj = 0;
-			if (curObj >= objs.size()) curObj = objs.size() - 1;
-			cv::imshow("img", img); cv::waitKey(1);
+			update(gImg, gObjs, xmlfiles[curFrame]);
+			if (gCurObj < 0) gCurObj = 0;
+			if (gCurObj >= gObjs.size()) gCurObj = gObjs.size() - 1;
+			cv::imshow("img", gImg); cv::waitKey(1);
 		}
 		else if (key == CV_KEY_RIGHT)
 		{
             curFrame++;
 			if (curFrame >= frameNum) curFrame = frameNum - 1;
-			update(img, objs, xmlfiles[curFrame]);
-			if (curObj < 0) curObj = objs.size() - 1;
-			if (curObj >= objs.size()) curObj = 0;
-			cv::imshow("img", img); cv::waitKey(1);
+			update(gImg, gObjs, xmlfiles[curFrame]);
+			if (gCurObj < 0) gCurObj = gObjs.size() - 1;
+			if (gCurObj >= gObjs.size()) gCurObj = 0;
+			cv::imshow("img", gImg); cv::waitKey(1);
 		}
 		else if (key == CV_KEY_w)
 		{
 			xml_vatic_pascal_modifyObjects(
 				folder + path_xml + xmlfiles[curFrame],
-				objs);
+                gObjs);
 		}
 		else if (key == CV_KEY_UP)
 		{
-			curObj++;
-			if (curObj < 0) curObj = objs.size() - 1;
-			if (curObj >= objs.size()) curObj = 0;
+            gCurObj++;
+			if (gCurObj < 0) gCurObj = gObjs.size() - 1;
+			if (gCurObj >= gObjs.size()) gCurObj = 0;
 			onMouse();
 		}
 		else if (key == CV_KEY_DOWN)
 		{
-			curObj--;
-			if (curObj < 0) curObj = objs.size() - 1;
-			if (curObj >= objs.size()) curObj = 0;
+            gCurObj--;
+			if (gCurObj < 0) gCurObj = gObjs.size() - 1;
+			if (gCurObj >= gObjs.size()) gCurObj = 0;
 			onMouse();
 		}
 		else
