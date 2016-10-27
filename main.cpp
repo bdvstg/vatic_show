@@ -39,6 +39,11 @@ typedef enum {
 void adjObj(vatic_object &obj, const RECT_DIR dir,
     const cv::Point &shift, adjObj_Method method = adjObj_Absolute)
 {
+    const int width = obj.xmax - obj.xmin;
+    const int height = obj.ymax - obj.ymin;
+    const int minWidth = 6;
+    const int minHeight = 10;
+
     if (method == adjObj_Absolute)
     {
         if (dir == RECT_UP)
@@ -51,7 +56,10 @@ void adjObj(vatic_object &obj, const RECT_DIR dir,
             obj.xmax = shift.x;
         else if (dir == RECT_CENTER)
         {
-
+            obj.xmin = shift.x - (width / 2);
+            obj.xmax = shift.x + (width / 2);
+            obj.ymin = shift.y - (height / 2);
+            obj.ymax = shift.y + (height / 2);
         }
     }
     else if (method == adjObj_Relative)
@@ -66,15 +74,14 @@ void adjObj(vatic_object &obj, const RECT_DIR dir,
             obj.xmax += shift.x;
         else if (dir == RECT_CENTER)
         {
-
+            obj.ymin += shift.y;
+            obj.ymax += shift.y;
+            obj.xmin += shift.x;
+            obj.xmax += shift.x;
         }
     }
 
     // ensure not small than min box
-    const int width = obj.xmax - obj.xmin;
-    const int height = obj.ymax - obj.ymin;
-    const int minWidth = 6;
-    const int minHeight = 10;
     if (height < minHeight)
     {
         if (dir == RECT_UP)
