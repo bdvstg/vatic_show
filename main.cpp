@@ -19,6 +19,8 @@ cv::Mat gImg; // current image
 std::vector<std::wstring> gAllFilenames; // hold all files's filename
 int gFrameNum; // amount of total files, will equal gAllFilenames.size()
 int gCurFrame; // current is nth file
+std::atomic<bool> gDrawCurObj = false;
+std::atomic<bool> gDrawCurObjSide = false;
 
 void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs);
 void updateData();
@@ -40,21 +42,13 @@ void adjObj(vatic_object &obj, const RECT_DIR dir,
     if (method == adjObj_Absolute)
     {
         if (dir == RECT_UP)
-        {
             obj.ymin = shift.y;
-        }
         else if (dir == RECT_DOWN)
-        {
             obj.ymax = shift.y;
-        }
         else if (dir == RECT_LEFT)
-        {
             obj.xmin = shift.x;
-        }
         else if (dir == RECT_RIGHT)
-        {
             obj.xmax = shift.x;
-        }
         else if (dir == RECT_CENTER)
         {
 
@@ -63,26 +57,70 @@ void adjObj(vatic_object &obj, const RECT_DIR dir,
     else if (method == adjObj_Relative)
     {
         if (dir == RECT_UP)
-        {
             obj.ymin += shift.y;
-        }
         else if (dir == RECT_DOWN)
-        {
             obj.ymax += shift.y;
-        }
         else if (dir == RECT_LEFT)
-        {
             obj.xmin += shift.x;
-        }
         else if (dir == RECT_RIGHT)
-        {
             obj.xmax += shift.x;
-        }
         else if (dir == RECT_CENTER)
         {
 
         }
     }
+
+    // ensure not small than min box
+    const int width = obj.xmax - obj.xmin;
+    const int height = obj.ymax - obj.ymin;
+    const int minWidth = 6;
+    const int minHeight = 10;
+    if (height < minHeight)
+    {
+        if (dir == RECT_UP)
+            obj.ymin = obj.ymax - minHeight;
+        else if (dir == RECT_DOWN)
+            obj.ymax = obj.ymin + minHeight;
+    }
+    if (width < minWidth)
+    {
+        if (dir == RECT_LEFT)
+            obj.xmin = obj.xmax - minWidth;
+        else if (dir == RECT_RIGHT)
+            obj.xmax = obj.xmin + minWidth;
+    }
+}
+
+void render(int x = -65535, int y = -65535)
+{
+    cv::Mat draw = gImg.clone();
+
+    // draw all bndBox
+    cv::Rect bndbox = toRect(gObjs[gCurObj]);
+    draw_vaticObjs(draw, gObjs);
+
+    if (gDrawCurObj)
+    {// draw current bndBox
+        cv::rectangle(draw, bndbox, cv::Scalar(200, 0, 200), 3);
+
+        if (gDrawCurObjSide)
+        {// draw current bndBox's selected side
+            Lint_t line = rectLine(bndbox, gCurObjSide);
+            if (gCurObjSide == RECT_CENTER)
+                cv::circle(draw, line.p1, 5, cv::Scalar(255, 255, 0), -1);
+            else
+                cv::line(draw, line.p1, line.p2, cv::Scalar(255, 255, 0), 3);
+        }
+    }
+
+    // draw filename
+    cv::putText(draw, w2mb(gAllFilenames[gCurFrame].c_str()), cv::Point(5, 20), 0, 0.8, cv::Scalar(30, 200, 30), 2);
+
+    // draw mouse pointer
+    cv::circle(draw, cv::Point(x, y), 3, cv::Scalar(255, 0, 0), -1);
+
+    // show
+    cv::imshow("img", draw);
 }
 
 std::atomic<bool> mouseLeftBtnDown = false;
@@ -98,22 +136,20 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
         printf("onMouse: %d\n", event);
 
     cv::Rect bndbox;
-    bool drawCurObj = false;
 
     RECT_DIR dir;
-    Lint_t line;
-    bool drawCurObjSide = false;
+
 
     if (gCurObj >= 0 && gCurObj < gObjs.size())
     {// curObj is valid
-        drawCurObj = true;
+        gDrawCurObj = true;
         vatic_object &targetObj = gObjs[gCurObj];
         bndbox = toRect(targetObj);
 
         cv::Point mousePos = cv::Point(x, y);
         if (mouseRoi(bndbox).contains(mousePos))
         {// mouse in ROI of bndbox, should be handle
-            drawCurObjSide = true;
+            gDrawCurObjSide = true;
 
             dir = rectDir(bndbox, mousePos);
 
@@ -123,9 +159,8 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
                     || event == CV_EVENT_MOUSEMOVE))
             {
                 adjObj(targetObj, dir, mousePos, adjObj_Absolute);
-                bndbox = toRect(targetObj);
+                //bndbox = toRect(targetObj);
             }
-            line = rectLine(bndbox, dir);
 
             // update 
             gCurObjSide = dir;
@@ -134,32 +169,7 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
             gCurObjSide = RECT_NONE;
     }
 
-    cv::Mat draw = gImg.clone();
-
-    // draw all bndBox
-    draw_vaticObjs(draw, gObjs);
-
-    if (drawCurObj)
-    {// draw current bndBox
-        cv::rectangle(draw, bndbox, cv::Scalar(200, 0, 200), 3);
-
-        if (drawCurObjSide)
-        {// draw current bndBox's selected side
-            if (dir == RECT_CENTER)
-                cv::circle(draw, line.p1, 5, cv::Scalar(255, 255, 0), -1);
-            else
-                cv::line(draw, line.p1, line.p2, cv::Scalar(255, 255, 0), 3);
-        }
-    }
-
-    // draw filename
-    cv::putText(draw, w2mb(gAllFilenames[gCurFrame].c_str()), cv::Point(5, 20), 0, 0.8, cv::Scalar(30, 200, 30), 2);
-
-    // draw mouse pointer
-    cv::circle(draw, cv::Point(x, y), 3, cv::Scalar(255, 0, 0), -1);
-
-    // show
-    cv::imshow("img", draw);
+    render(x, y);
 }
 
 void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs)
@@ -261,22 +271,22 @@ int main(int argc, char **argv)
         else if (key == CV_KEY_NUMPAD_8)
         {
             adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(0,-1), adjObj_Relative);
-            onMouse();
+            render();
         }
         else if (key == CV_KEY_NUMPAD_2)
         {
             adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(0, 1), adjObj_Relative);
-            onMouse();
+            render();
         }
         else if (key == CV_KEY_NUMPAD_4)
         {
             adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(-1, 0), adjObj_Relative);
-            onMouse();
+            render();
         }
         else if (key == CV_KEY_NUMPAD_6)
         {
             adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(1, 0), adjObj_Relative);
-            onMouse();
+            render();
         }
         else
         {
