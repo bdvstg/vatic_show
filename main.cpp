@@ -183,6 +183,7 @@ void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs)
     }
 }
 
+static std::vector<char> gImgBuf;
 void updateData()
 {
     const std::wstring xml_name = folder + path_xml + gAllFilenames[gCurFrame];
@@ -194,10 +195,8 @@ void updateData()
     gObjs = xml_vatic_pascal_parse(xml_name);
 
     // update image
-    static std::vector<char> imgBuf = ReadFile(img_name.c_str());
-    gImg = cv::imdecode(imgBuf, 1);
-
-    onMouse();
+    gImgBuf = ReadFile(img_name.c_str());
+    gImg = cv::imdecode(gImgBuf, 1);
 }
 
 int main(int argc, char **argv)
@@ -232,7 +231,7 @@ int main(int argc, char **argv)
             updateData();
             if (gCurObj < 0) gCurObj = 0;
             if (gCurObj >= gObjs.size()) gCurObj = gObjs.size() - 1;
-            cv::imshow("img", gImg); cv::waitKey(1);
+            render(); cv::waitKey(1);
             break;
         case KEY_NEXT_FRAME:
             gCurFrame++;
@@ -240,7 +239,7 @@ int main(int argc, char **argv)
             updateData();
             if (gCurObj < 0) gCurObj = gObjs.size() - 1;
             if (gCurObj >= gObjs.size()) gCurObj = 0;
-            cv::imshow("img", gImg); cv::waitKey(1);
+            render(); cv::waitKey(1);
             break;
         case  CV_KEY_w:
             xml_vatic_pascal_modifyObjects(
