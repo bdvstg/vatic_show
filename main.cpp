@@ -135,23 +135,18 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
     else
         printf("onMouse: %d\n", event);
 
-    cv::Rect bndbox;
-
-    RECT_DIR dir;
-
-
     if (gCurObj >= 0 && gCurObj < gObjs.size())
     {// curObj is valid
         gDrawCurObj = true;
         vatic_object &targetObj = gObjs[gCurObj];
-        bndbox = toRect(targetObj);
+        const cv::Rect bndbox = toRect(targetObj);
 
         cv::Point mousePos = cv::Point(x, y);
         if (mouseRoi(bndbox).contains(mousePos))
         {// mouse in ROI of bndbox, should be handle
             gDrawCurObjSide = true;
 
-            dir = rectDir(bndbox, mousePos);
+            const RECT_DIR dir = rectDir(bndbox, mousePos);
 
             if (mouseLeftBtnDown &&
                 (event == CV_EVENT_LBUTTONDOWN
@@ -159,7 +154,6 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
                     || event == CV_EVENT_MOUSEMOVE))
             {
                 adjObj(targetObj, dir, mousePos, adjObj_Absolute);
-                //bndbox = toRect(targetObj);
             }
 
             // update 
@@ -225,72 +219,65 @@ int main(int argc, char **argv)
          cv::waitKey(1);
         int key = cv::waitKey(0);
         
-        if (key == -1);
-        else if (key == 27)
+        switch (key)
         {
+        case CV_KEY_NONE:
             break;
-        }
-        else if (key == CV_KEY_LEFT)
-        {
+        case KEY_END:
+            exit(0);
+            break;
+        case KEY_PREV_FRAME:
             gCurFrame--;
             if (gCurFrame < 0) gCurFrame = 0;
             updateData();
             if (gCurObj < 0) gCurObj = 0;
             if (gCurObj >= gObjs.size()) gCurObj = gObjs.size() - 1;
             cv::imshow("img", gImg); cv::waitKey(1);
-        }
-        else if (key == CV_KEY_RIGHT)
-        {
+            break;
+        case KEY_NEXT_FRAME:
             gCurFrame++;
             if (gCurFrame >= gFrameNum) gCurFrame = gFrameNum - 1;
             updateData();
             if (gCurObj < 0) gCurObj = gObjs.size() - 1;
             if (gCurObj >= gObjs.size()) gCurObj = 0;
             cv::imshow("img", gImg); cv::waitKey(1);
-        }
-        else if (key == CV_KEY_w)
-        {
+            break;
+        case  CV_KEY_w:
             xml_vatic_pascal_modifyObjects(
                 folder + path_xml + gAllFilenames[gCurFrame],
                 gObjs);
-        }
-        else if (key == CV_KEY_UP)
-        {
+            break;
+        case KEY_NEXT_OBJ:
             gCurObj++;
             if (gCurObj < 0) gCurObj = gObjs.size() - 1;
             if (gCurObj >= gObjs.size()) gCurObj = 0;
             onMouse();
-        }
-        else if (key == CV_KEY_DOWN)
-        {
+            break;
+        case KEY_PRVE_OBJ:
             gCurObj--;
             if (gCurObj < 0) gCurObj = gObjs.size() - 1;
             if (gCurObj >= gObjs.size()) gCurObj = 0;
             onMouse();
-        }
-        else if (key == CV_KEY_NUMPAD_8)
-        {
-            adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(0,-1), adjObj_Relative);
+            break;
+        case KEY_ADJ_UP:
+            adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(0, -1), adjObj_Relative);
             render();
-        }
-        else if (key == CV_KEY_NUMPAD_2)
-        {
+            break;
+        case KEY_ADJ_DOWN:
             adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(0, 1), adjObj_Relative);
             render();
-        }
-        else if (key == CV_KEY_NUMPAD_4)
-        {
+            break;
+        case KEY_ADJ_LEFT:
             adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(-1, 0), adjObj_Relative);
             render();
-        }
-        else if (key == CV_KEY_NUMPAD_6)
-        {
+            break;
+        case KEY_ADJ_RIGHT:
             adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(1, 0), adjObj_Relative);
             render();
-        }
-        else
-        {
+            break;
+        default:
             printf("%x\n", key);
+            break;
         }
     }
 

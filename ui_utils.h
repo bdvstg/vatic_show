@@ -2,7 +2,17 @@
 #define ui_utils_H__
 
 #include "opencvlib.h"
+#include "cv_key_table.h"
 
+#define KEY_NEXT_FRAME CV_KEY_RIGHT
+#define KEY_PREV_FRAME CV_KEY_LEFT
+#define KEY_NEXT_OBJ   CV_KEY_UP
+#define KEY_PRVE_OBJ   CV_KEY_DOWN
+#define KEY_ADJ_LEFT   CV_KEY_NUMPAD_4
+#define KEY_ADJ_RIGHT  CV_KEY_NUMPAD_6
+#define KEY_ADJ_UP     CV_KEY_NUMPAD_8
+#define KEY_ADJ_DOWN   CV_KEY_NUMPAD_2
+#define KEY_END        CV_KEY_ESC
 typedef enum
 {
     RECT_NONE = -1,
