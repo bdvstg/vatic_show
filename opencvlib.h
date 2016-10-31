@@ -24,13 +24,13 @@
 // 4. which library you are used? please add below
 #pragma comment(lib, USE_LIB("opencv_core"))
 #pragma comment(lib, USE_LIB("opencv_highgui"))
-#pragma comment(lib, USE_LIB("opencv_video"))
+//#pragma comment(lib, USE_LIB("opencv_video"))
 //#pragma comment(lib, USE_LIB("opencv_ml"))
-#pragma comment(lib, USE_LIB("opencv_legacy"))
-#pragma comment(lib, USE_LIB("opencv_imgproc"))
+//#pragma comment(lib, USE_LIB("opencv_legacy"))
+//#pragma comment(lib, USE_LIB("opencv_imgproc"))
 //#pragma comment(lib, USE_LIB("opencv_ts"))
-#pragma comment(lib, USE_LIB("opencv_calib3d"))
-#pragma comment(lib, USE_LIB("opencv_features2d"))
+//#pragma comment(lib, USE_LIB("opencv_calib3d"))
+//#pragma comment(lib, USE_LIB("opencv_features2d"))
 
 #undef USE_LIB
 #undef USE_LIBV
