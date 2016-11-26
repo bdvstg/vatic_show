@@ -78,6 +78,11 @@ void fileManage::init()
         });
 }
 
+std::wstring fileManage::getBaseName(int idx) const
+{
+    return frames[idx].baseName;
+}
+
 std::wstring fileManage::getImageName(int idx) const
 {
     std::wstring extname = L".jpg";

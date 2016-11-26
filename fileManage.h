@@ -20,6 +20,7 @@ public:
     fileManage(foldSetting f);
     void init();
 
+    std::wstring getBaseName(int idx) const;
     std::wstring getImageName(int idx) const;
     std::wstring getXmlName(int idx) const;
     bool isDeleted(int idx) const;
