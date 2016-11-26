@@ -128,3 +128,12 @@ std::vector<std::wstring> getFileList()
 
     return list;
 }
+
+
+bool isDirectoryExist(std::wstring dirPath)
+{
+    DWORD dwAttrib = GetFileAttributesW(dirPath.c_str());
+
+    return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
+        (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+}

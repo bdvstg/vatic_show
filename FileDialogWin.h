@@ -15,5 +15,8 @@ std::vector<std::wstring> listFiles(const wchar_t * dir_name);
 // show a folder chooser dialog and list files inside
 std::vector<std::wstring> getFileList();
 
+// check a directory is exist or not
+bool isDirectoryExist(std::wstring dirPath);
+
 #endif
 
