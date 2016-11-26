@@ -1,6 +1,8 @@
 #include "opencvlib.h"
 #include "xml_vatic_pascal.h"
 #include "FileDialogWin.h"
+#include "fileManage.h"
+#include "foldSetting.h"
 #include "ReadFile.h"
 #include <string>
 #include <thread>
@@ -11,6 +13,7 @@
 
 const std::wstring path_xml = L"Annotations";
 const std::wstring path_img = L"JPEGImages";
+
 std::wstring folder; // root folder (parent of Annotations and JPEGImages)
 std::vector<vatic_object> gObjs; // current images's all bndBoxs
 int gCurObj = 0; // which bndBox in gObjs
@@ -221,6 +224,16 @@ void checkPath(std::wstring basePath, std::wstring targetFolder)
 int main(int argc, char **argv)
 {
     folder = OpenFolderDialog();
+
+    auto folds = foldSetting(
+        folder,
+        L"Annotations",
+        L"JPEGImages",
+        L"deletedAnnotations",
+        L"deletedJPEGImages");
+    auto files = fileManage(folds);
+    files.init();
+
     const std::wstring fullPathXml = folder + L"\\" + path_xml;
     const std::wstring fullPathImg = folder + L"\\" + path_img;
     checkPath(folder, path_xml);
