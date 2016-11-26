@@ -78,6 +78,11 @@ void fileManage::init()
         });
 }
 
+size_t fileManage::size() const
+{
+    return frames.size();
+}
+
 std::wstring fileManage::getBaseName(int idx) const
 {
     return frames[idx].baseName;

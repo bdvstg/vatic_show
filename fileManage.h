@@ -20,6 +20,7 @@ public:
     fileManage(foldSetting f);
     void init();
 
+    size_t size() const;
     std::wstring getBaseName(int idx) const;
     std::wstring getImageName(int idx) const;
     std::wstring getXmlName(int idx) const;
