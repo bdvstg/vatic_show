@@ -137,3 +137,8 @@ bool isDirectoryExist(std::wstring dirPath)
     return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
         (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 }
+
+void showMessageBox(std::wstring caption, std::wstring context)
+{
+    MessageBoxW(nullptr, context.c_str(), caption.c_str(), 0);
+}

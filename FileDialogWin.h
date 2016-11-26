@@ -18,5 +18,8 @@ std::vector<std::wstring> getFileList();
 // check a directory is exist or not
 bool isDirectoryExist(std::wstring dirPath);
 
+// show message box
+void showMessageBox(std::wstring caption, std::wstring context)
+
 #endif
 
