@@ -13,14 +13,27 @@
 
 const std::wstring foldNameXml = L"Annotations";
 const std::wstring foldNameImg = L"JPEGImages";
+using uiDatas = struct {
+        std::vector<vatic_object> objs; // current images's all bndBoxs
+        int curObj; // which bndBox in gObjs
+        RECT_DIR curObjSide;
+        cv::Mat img; // current image
+        std::atomic<bool> drawCurObj;
+        std::atomic<bool> drawCurObjSide;
+        int curFrame;
 
-std::vector<vatic_object> gObjs; // current images's all bndBoxs
-int gCurObj = 0; // which bndBox in gObjs
-RECT_DIR gCurObjSide = RECT_NONE;
-cv::Mat gImg; // current image
+        foldSetting folds;
+        fileManage files;
+    };
 
-std::atomic<bool> gDrawCurObj = false;
-std::atomic<bool> gDrawCurObjSide = false;
+void initUiDatas(uiDatas &data)
+{
+    data.curObj = 0;
+    data.drawCurObj = false;
+    data.drawCurObjSide = false;
+    data.curObjSide = RECT_NONE;
+    data.curFrame = 0;
+}
 
 void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs);
 
@@ -141,16 +154,18 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
     else
         printf("onMouse: %d\n", event);
 
-    if (gCurObj >= 0 && gCurObj < gObjs.size())
+    uiDatas *pData = (uiDatas*)param;
+    uiDatas &data = *pData;
+    if (data.curObj >= 0 && data.curObj < data.objs.size())
     {// curObj is valid
-        gDrawCurObj = true;
-        vatic_object &targetObj = gObjs[gCurObj];
+        data.drawCurObj = true;
+        vatic_object &targetObj = data.objs[data.curObj];
         const cv::Rect bndbox = toRect(targetObj);
 
         cv::Point mousePos = cv::Point(x, y);
         if (mouseRoi(bndbox).contains(mousePos))
         {// mouse in ROI of bndbox, should be handle
-            gDrawCurObjSide = true;
+            data.drawCurObjSide = true;
 
             const RECT_DIR dir = rectDir(bndbox, mousePos);
 
@@ -163,10 +178,10 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
             }
 
             // update 
-            gCurObjSide = dir;
+            data.curObjSide = dir;
         }
         else
-            gCurObjSide = RECT_NONE;
+            data.curObjSide = RECT_NONE;
     }
 
     render(x, y);
@@ -234,14 +249,17 @@ int main(int argc, char **argv)
     auto files = fileManage(folds);
     files.init();
 
-    int curFrame = 0;
+    uiDatas data;
+    initUiDatas(data);
+
+    int & curFrame = data.curFrame;
 
     cv::Mat dummy(cv::Size(30, 30), CV_8UC3);
     cv::imshow("img", dummy);
-    cv::setMouseCallback("img", onMouse);
+    cv::setMouseCallback("img", onMouse, &data);
 
-    updateData(files, curFrame, gObjs, gImg);
-    cv::imshow("img", gImg); cv::waitKey(1);
+    updateData(files, curFrame, data.objs, data.img);
+    cv::imshow("img", data.img); cv::waitKey(1);
     while(true)
     {
          cv::waitKey(1);
@@ -257,51 +275,51 @@ int main(int argc, char **argv)
         case KEY_PREV_FRAME:
             curFrame--;
             if (curFrame < 0) curFrame = 0;
-            updateData(files, curFrame, gObjs, gImg);
-            if (gCurObj < 0) gCurObj = 0;
-            if (gCurObj >= gObjs.size()) gCurObj = gObjs.size() - 1;
+            updateData(files, curFrame, data.objs, data.img);
+            if (data.curObj < 0) data.curObj = 0;
+            if (data.curObj >= data.objs.size()) data.curObj = data.objs.size() - 1;
             render(caption); cv::waitKey(1);
             break;
         case KEY_NEXT_FRAME:
             curFrame++;
             if (curFrame >= files.size())
                 curFrame = files.size() - 1;
-            updateData(files, curFrame, gObjs, gImg);
-            if (gCurObj < 0) gCurObj = gObjs.size() - 1;
-            if (gCurObj >= gObjs.size()) gCurObj = 0;
+            updateData(files, curFrame, data.objs, data.img);
+            if (data.curObj < 0) data.curObj = data.objs.size() - 1;
+            if (data.curObj >= data.objs.size()) data.curObj = 0;
             render(caption); cv::waitKey(1);
             break;
         case  CV_KEY_w:
             xml_vatic_pascal_modifyObjects(
                 files.getXmlName(curFrame),
-                gObjs);
+                data.objs);
             break;
         case KEY_NEXT_OBJ:
-            gCurObj++;
-            if (gCurObj < 0) gCurObj = gObjs.size() - 1;
-            if (gCurObj >= gObjs.size()) gCurObj = 0;
+            data.curObj++;
+            if (data.curObj < 0) data.curObj = data.objs.size() - 1;
+            if (data.curObj >= data.objs.size()) data.curObj = 0;
             onMouse();
             break;
         case KEY_PRVE_OBJ:
-            gCurObj--;
-            if (gCurObj < 0) gCurObj = gObjs.size() - 1;
-            if (gCurObj >= gObjs.size()) gCurObj = 0;
+            data.curObj--;
+            if (data.curObj < 0) data.curObj = data.objs.size() - 1;
+            if (data.curObj >= data.objs.size()) data.curObj = 0;
             onMouse();
             break;
         case KEY_ADJ_UP:
-            adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(0, -1), adjObj_Relative);
+            adjObj(data.objs[data.curObj], data.curObjSide, cv::Point(0, -1), adjObj_Relative);
             render(caption);
             break;
         case KEY_ADJ_DOWN:
-            adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(0, 1), adjObj_Relative);
+            adjObj(data.objs[data.curObj], data.curObjSide, cv::Point(0, 1), adjObj_Relative);
             render(caption);
             break;
         case KEY_ADJ_LEFT:
-            adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(-1, 0), adjObj_Relative);
+            adjObj(data.objs[data.curObj], data.curObjSide, cv::Point(-1, 0), adjObj_Relative);
             render(caption);
             break;
         case KEY_ADJ_RIGHT:
-            adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(1, 0), adjObj_Relative);
+            adjObj(data.objs[data.curObj], data.curObjSide, cv::Point(1, 0), adjObj_Relative);
             render(caption);
             break;
         default:
