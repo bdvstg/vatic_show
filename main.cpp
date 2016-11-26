@@ -229,6 +229,27 @@ void checkPath(std::wstring basePath, std::wstring targetFolder)
     }
 }
 
+static int jumpIndex(int cur, int jump, int max, int min, bool cycling)
+{
+    if (max <= min) throw "unexpected behavior!";
+    jump %= (max - min);
+    cur += jump;
+
+    if (cur >= max)
+        if (cycling)
+            cur = min + (cur - max);
+        else
+            cur = max - 1;
+
+    if (cur < min)
+        if (cycling)
+            cur = max - (min - cur);
+        else
+            cur = min;
+
+    return cur;
+}
+
 int main(int argc, char **argv)
 {
     // choose base folder (parent of Annotations and JPEGImages)
@@ -249,6 +270,10 @@ int main(int argc, char **argv)
     // check Annotations and JPEGImages both exist
     checkPath(folds.base(), folds.annotations());
     checkPath(folds.base(), folds.jpegImages());
+    if ( !isDirectoryExist( folds.fullDeleteAnnotations() ) )
+        createFolder(folds.fullDeleteAnnotations());
+    if (!isDirectoryExist(folds.fullDeleteJpegImages()))
+        createFolder(folds.fullDeleteJpegImages());
 
     // setup file manage
     data.files = fileManage(folds);
@@ -256,18 +281,22 @@ int main(int argc, char **argv)
 
     auto & files = data.files;
     auto & curFrame = data.curFrame;
+    auto & objs = data.objs;
+    auto & curObj = data.curObj;
+    auto & curObjSide = data.curObjSide;
+    auto & img = data.img;
 
     cv::Mat dummy(cv::Size(30, 30), CV_8UC3);
     cv::imshow("img", dummy);
     cv::setMouseCallback("img", onMouse, &data);
 
-    updateData(files, curFrame, data.objs, data.img);
-    cv::imshow("img", data.img); cv::waitKey(1);
+    updateData(files, curFrame, objs, img);
+    cv::imshow("img", img); cv::waitKey(1);
     while(true)
     {
          cv::waitKey(1);
         int key = cv::waitKey(0);
-        std::string caption = w2mb(files.getBaseName(curFrame).c_str());
+
         switch (key)
         {
         case CV_KEY_NONE:
@@ -276,53 +305,44 @@ int main(int argc, char **argv)
             exit(0);
             break;
         case KEY_PREV_FRAME:
-            curFrame--;
-            if (curFrame < 0) curFrame = 0;
-            updateData(files, curFrame, data.objs, data.img);
-            if (data.curObj < 0) data.curObj = 0;
-            if (data.curObj >= data.objs.size()) data.curObj = data.objs.size() - 1;
+            curFrame = jumpIndex(curFrame, -1, files.size(), 0, false);
+            updateData(files, curFrame, objs, img);
+            curObj = jumpIndex(curObj, 0, objs.size(), 0, true);
             render(data); cv::waitKey(1);
             break;
         case KEY_NEXT_FRAME:
-            curFrame++;
-            if (curFrame >= files.size())
-                curFrame = files.size() - 1;
-            updateData(files, curFrame, data.objs, data.img);
-            if (data.curObj < 0) data.curObj = data.objs.size() - 1;
-            if (data.curObj >= data.objs.size()) data.curObj = 0;
+            curFrame = jumpIndex(curFrame, 1, files.size(), 0, false);
+            updateData(files, curFrame, objs, img);
+            curObj = jumpIndex(curObj, 0, objs.size(), 0, true);
             render(data); cv::waitKey(1);
             break;
         case  CV_KEY_w:
             xml_vatic_pascal_modifyObjects(
                 files.getXmlName(curFrame),
-                data.objs);
+                objs);
             break;
         case KEY_NEXT_OBJ:
-            data.curObj++;
-            if (data.curObj < 0) data.curObj = data.objs.size() - 1;
-            if (data.curObj >= data.objs.size()) data.curObj = 0;
+            curObj = jumpIndex(curObj, 1, objs.size(), 0, true);
             onMouse();
             break;
         case KEY_PRVE_OBJ:
-            data.curObj--;
-            if (data.curObj < 0) data.curObj = data.objs.size() - 1;
-            if (data.curObj >= data.objs.size()) data.curObj = 0;
+            curObj = jumpIndex(curObj, -1, objs.size(), 0, true);
             onMouse();
             break;
         case KEY_ADJ_UP:
-            adjObj(data.objs[data.curObj], data.curObjSide, cv::Point(0, -1), adjObj_Relative);
+            adjObj(objs[curObj], curObjSide, cv::Point(0, -1), adjObj_Relative);
             render(data);
             break;
         case KEY_ADJ_DOWN:
-            adjObj(data.objs[data.curObj], data.curObjSide, cv::Point(0, 1), adjObj_Relative);
+            adjObj(objs[curObj], curObjSide, cv::Point(0, 1), adjObj_Relative);
             render(data);
             break;
         case KEY_ADJ_LEFT:
-            adjObj(data.objs[data.curObj], data.curObjSide, cv::Point(-1, 0), adjObj_Relative);
+            adjObj(objs[curObj], curObjSide, cv::Point(-1, 0), adjObj_Relative);
             render(data);
             break;
         case KEY_ADJ_RIGHT:
-            adjObj(data.objs[data.curObj], data.curObjSide, cv::Point(1, 0), adjObj_Relative);
+            adjObj(objs[curObj], curObjSide, cv::Point(1, 0), adjObj_Relative);
             render(data);
             break;
         default:
