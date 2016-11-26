@@ -77,3 +77,32 @@ void fileManage::init()
             return la < lb;
         });
 }
+
+std::wstring fileManage::getImageName(int idx)
+{
+    std::wstring extname = L".jpg";
+    std::wstring fullname;
+    const auto & frame = frames[idx];
+    if (frame.isDeleted)
+        fullname = fold.fullDeleteJpegImages() + L"\\" + frame.baseName + extname;
+    else
+        fullname = fold.fullJpegImages() + L"\\" + frame.baseName + extname;
+    return fullname;
+}
+
+std::wstring fileManage::getXmlName(int idx)
+{
+    std::wstring extname = L".xml";
+    std::wstring fullname;
+    const auto & frame = frames[idx];
+    if (frame.isDeleted)
+        fullname = fold.fullDeleteAnnotations() + L"\\" + frame.baseName + extname;
+    else
+        fullname = fold.fullAnnotations() + L"\\" + frame.baseName + extname;
+    return fullname;
+}
+
+bool fileManage::isDeleted(int idx)
+{
+    return frames[idx].isDeleted;
+}

@@ -20,6 +20,10 @@ public:
     fileManage(foldSetting f);
     void init();
 
+    std::wstring getImageName(int idx);
+    std::wstring getXmlName(int idx);
+    bool isDeleted(int idx);
+
 private:
     foldSetting fold;
     frames_t frames; // more compact struct to hold all filenames
