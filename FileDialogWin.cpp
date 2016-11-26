@@ -147,3 +147,9 @@ bool createFolder(std::wstring path)
     bool success = CreateDirectoryW(path.c_str(), nullptr);
     return success;
 }
+
+bool moveFile(std::wstring src, std::wstring dest)
+{
+    bool success = MoveFileW(src.c_str(), dest.c_str());
+    return success;
+}

@@ -26,5 +26,8 @@ void showMessageBox(std::wstring caption, std::wstring context);
 // create a directory, if success, return true
 bool createFolder(std::wstring path);
 
+// move file (or directory)
+bool moveFile(std::wstring src, std::wstring dest);
+
 #endif
 
