@@ -146,4 +146,5 @@ void showMessageBox(std::wstring caption, std::wstring context)
 bool createFolder(std::wstring path)
 {
     bool success = CreateDirectoryW(path.c_str(), nullptr);
+    return success;
 }

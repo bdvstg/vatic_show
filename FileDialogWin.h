@@ -22,7 +22,7 @@ bool isDirectoryExist(std::wstring dirPath);
 void showMessageBox(std::wstring caption, std::wstring context);
 
 // create a directory, if success, return true
-bool createFolder(std::wstring path)
+bool createFolder(std::wstring path);
 
 #endif
 
