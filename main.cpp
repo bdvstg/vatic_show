@@ -17,7 +17,6 @@ int gCurObj = 0; // which bndBox in gObjs
 RECT_DIR gCurObjSide = RECT_NONE;
 cv::Mat gImg; // current image
 std::vector<std::wstring> gAllFilenames; // hold all files's filename
-int gFrameNum; // amount of total files, will equal gAllFilenames.size()
 int gCurFrame; // current is nth file
 std::atomic<bool> gDrawCurObj = false;
 std::atomic<bool> gDrawCurObjSide = false;
@@ -229,7 +228,6 @@ int main(int argc, char **argv)
 
     gAllFilenames = listFiles(fullPathXml.c_str());
 
-    gFrameNum = gAllFilenames.size();
     gCurFrame = 0;
 
     cv::Mat dummy(cv::Size(30, 30), CV_8UC3);
@@ -260,7 +258,8 @@ int main(int argc, char **argv)
             break;
         case KEY_NEXT_FRAME:
             gCurFrame++;
-            if (gCurFrame >= gFrameNum) gCurFrame = gFrameNum - 1;
+            if (gCurFrame >= gAllFilenames.size())
+                gCurFrame = gAllFilenames.size() - 1;
             updateData();
             if (gCurObj < 0) gCurObj = gObjs.size() - 1;
             if (gCurObj >= gObjs.size()) gCurObj = 0;
