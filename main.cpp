@@ -328,7 +328,8 @@ int main(int argc, char **argv)
             curObj = jumpIndex(curObj, 0, objs.size(), 0, true);
             render(data); cv::waitKey(1);
             break;
-        case  CV_KEY_w:
+        case CV_KEY_w:
+        case CV_KEY_CtrlS:
             xml_vatic_pascal_modifyObjects(
                 files.getXmlName(curFrame),
                 objs);

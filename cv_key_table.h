@@ -73,7 +73,7 @@
 #define CV_KEY_z (0x7A)
 #define CV_KEY_ESC (27)
 #define CV_KEY_NONE (-1)
-#define CV_KEY_a (0x61)
+#define CV_KEY_CtrlS (0x13)
 
 #endif
 
