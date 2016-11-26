@@ -110,22 +110,22 @@ void adjObj(vatic_object &obj, const RECT_DIR dir,
     }
 }
 
-void render(const std::string caption, int x = -65535, int y = -65535)
+void render(const uiDatas &data, int x = -65535, int y = -65535)
 {
-    cv::Mat draw = gImg.clone();
+    cv::Mat draw = data.img.clone();
 
     // draw all bndBox
-    cv::Rect bndbox = toRect(gObjs[gCurObj]);
-    draw_vaticObjs(draw, gObjs);
+    cv::Rect bndbox = toRect(data.objs[data.curObj]);
+    draw_vaticObjs(draw, data.objs);
 
-    if (gDrawCurObj)
+    if (data.drawCurObj)
     {// draw current bndBox
         cv::rectangle(draw, bndbox, cv::Scalar(200, 0, 200), 3);
 
-        if (gDrawCurObjSide)
+        if (data.drawCurObjSide)
         {// draw current bndBox's selected side
-            Lint_t line = rectLine(bndbox, gCurObjSide);
-            if (gCurObjSide == RECT_CENTER)
+            Lint_t line = rectLine(bndbox, data.curObjSide);
+            if (data.curObjSide == RECT_CENTER)
                 cv::circle(draw, line.p1, 5, cv::Scalar(255, 255, 0), -1);
             else
                 cv::line(draw, line.p1, line.p2, cv::Scalar(255, 255, 0), 3);
@@ -133,6 +133,7 @@ void render(const std::string caption, int x = -65535, int y = -65535)
     }
 
     // draw filename
+    std::string caption = w2mb(data.files.getBaseName(data.curFrame).c_str());
     cv::putText(draw, caption, cv::Point(5, 20), 0, 0.8, cv::Scalar(30, 200, 30), 2);
 
     // draw mouse pointer
@@ -184,7 +185,7 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
             data.curObjSide = RECT_NONE;
     }
 
-    render(x, y);
+    render(data, x, y);
 }
 
 void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs)
@@ -233,26 +234,28 @@ int main(int argc, char **argv)
     // choose base folder (parent of Annotations and JPEGImages)
     std::wstring baseFolder = OpenFolderDialog();
 
+    uiDatas data;
+    initUiDatas(data);
+
     // setup folder setting
-    auto folds = foldSetting(
+    data.folds = foldSetting(
         baseFolder,
         foldNameXml,
         foldNameImg,
         L"deleted" + foldNameXml,
         L"deleted" + foldNameImg);
+    auto & folds = data.folds;
 
     // check Annotations and JPEGImages both exist
     checkPath(folds.base(), folds.annotations());
     checkPath(folds.base(), folds.jpegImages());
 
     // setup file manage
-    auto files = fileManage(folds);
-    files.init();
+    data.files = fileManage(folds);
+    data.files.init();
 
-    uiDatas data;
-    initUiDatas(data);
-
-    int & curFrame = data.curFrame;
+    auto & files = data.files;
+    auto & curFrame = data.curFrame;
 
     cv::Mat dummy(cv::Size(30, 30), CV_8UC3);
     cv::imshow("img", dummy);
@@ -278,7 +281,7 @@ int main(int argc, char **argv)
             updateData(files, curFrame, data.objs, data.img);
             if (data.curObj < 0) data.curObj = 0;
             if (data.curObj >= data.objs.size()) data.curObj = data.objs.size() - 1;
-            render(caption); cv::waitKey(1);
+            render(data); cv::waitKey(1);
             break;
         case KEY_NEXT_FRAME:
             curFrame++;
@@ -287,7 +290,7 @@ int main(int argc, char **argv)
             updateData(files, curFrame, data.objs, data.img);
             if (data.curObj < 0) data.curObj = data.objs.size() - 1;
             if (data.curObj >= data.objs.size()) data.curObj = 0;
-            render(caption); cv::waitKey(1);
+            render(data); cv::waitKey(1);
             break;
         case  CV_KEY_w:
             xml_vatic_pascal_modifyObjects(
@@ -308,19 +311,19 @@ int main(int argc, char **argv)
             break;
         case KEY_ADJ_UP:
             adjObj(data.objs[data.curObj], data.curObjSide, cv::Point(0, -1), adjObj_Relative);
-            render(caption);
+            render(data);
             break;
         case KEY_ADJ_DOWN:
             adjObj(data.objs[data.curObj], data.curObjSide, cv::Point(0, 1), adjObj_Relative);
-            render(caption);
+            render(data);
             break;
         case KEY_ADJ_LEFT:
             adjObj(data.objs[data.curObj], data.curObjSide, cv::Point(-1, 0), adjObj_Relative);
-            render(caption);
+            render(data);
             break;
         case KEY_ADJ_RIGHT:
             adjObj(data.objs[data.curObj], data.curObjSide, cv::Point(1, 0), adjObj_Relative);
-            render(caption);
+            render(data);
             break;
         default:
             printf("%x\n", key);
