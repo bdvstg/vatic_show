@@ -228,6 +228,24 @@ void updateData(const fileManage &fmg, int idx,
     img = cv::imdecode(imgBuf, 1);
 }
 
+void showHelp()
+{
+    std::wstring ctx = L"";
+    ctx += L"跳下一張／上一張影像：\n";
+    ctx += L"　　方向鍵右 = 下一張影像\n";
+    ctx += L"　　方向鍵左 = 前一張影像\n";
+    ctx += L"調整框框：\n";
+    ctx += L"　　方向鍵下 = 選擇下一個框框\n";
+    ctx += L"　　方向鍵上 = 選擇前一個框框\n";
+    ctx += L"　　用滑鼠左鍵來移動目前選擇的框框或是調整框框的大小\n";
+    ctx += L"　　右邊的數字鍵４／６／８／２可以一次只移動一個Ｐｉｘｅｌ\n";
+    ctx += L"　　Ctrl+S = 儲存框框的資料\n";
+    ctx += L"ESC     = 結束程式\n";
+    ctx += L"Delete  = 將影像/XML檔移到刪除資料夾\n";
+    ctx += L"Insert  = 將影像/XML檔從刪除資料夾移回原本的資料夾\n";
+    showMessageBox(L"說明", ctx);
+}
+
 void checkPath(std::wstring basePath, std::wstring targetFolder)
 {
     const std::wstring fullPath = basePath + L"\\" + targetFolder;
@@ -361,6 +379,9 @@ int main(int argc, char **argv)
         case KEY_INS_FRAME:
             data.files.move2normal(curFrame);
             render(data);
+            break;
+        case KEY_HELP:
+            showHelp();
             break;
         default:
             printf("%x\n", key);

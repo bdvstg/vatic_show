@@ -76,6 +76,18 @@
 #define CV_KEY_CtrlS (0x13)
 #define CV_KEY_Delete (0x2e0000)
 #define CV_KEY_Insert (0x2d0000)
+#define CV_KEY_F1 (0x700000)
+#define CV_KEY_F2 (0x710000)
+#define CV_KEY_F3 (0x720000)
+#define CV_KEY_F4 (0x730000)
+#define CV_KEY_F5 (0x740000)
+#define CV_KEY_F6 (0x750000)
+#define CV_KEY_F7 (0x760000)
+#define CV_KEY_F8 (0x770000)
+#define CV_KEY_F9 (0x780000)
+#define CV_KEY_F10 (0x790000)
+#define CV_KEY_F11 (0x7a0000)
+#define CV_KEY_F12 (0x7b0000)
 
 #endif
 

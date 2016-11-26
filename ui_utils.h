@@ -16,6 +16,7 @@
 #define KEY_SAVE       CV_KEY_CtrlS
 #define KEY_DEL_FRAME  CV_KEY_Delete
 #define KEY_INS_FRAME  CV_KEY_Insert
+#define KEY_HELP       CV_KEY_F1
 typedef enum
 {
     RECT_NONE = -1,
