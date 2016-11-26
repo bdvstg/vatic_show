@@ -60,7 +60,7 @@ xmlXPathObjectPtr getNodeSet(xmlDocPtr doc, xmlChar *xpath)
     return result;
 }
 
-xmlNodePtr find1stChild(xmlNodePtr node, const char *name)
+static const xmlNodePtr find1stChild(xmlNodePtr node, const char *name)
 {
     xmlNodePtr ptr = node->children;
     while (ptr != nullptr)
@@ -75,8 +75,10 @@ xmlNodePtr find1stChild(xmlNodePtr node, const char *name)
 
 static std::string get1stChildContent(xmlNodePtr node, const char *name)
 {
-    xmlNodePtr target = find1stChild(node, name);
-    return std::string((const char*)target->children->content);
+    xmlNodePtr target = nullptr;
+    target = find1stChild(node, name);
+    std::string content = std::string((const char*)target->children->content);
+    return content;
 }
 
 static vatic_object toObj(const xmlNodePtr & obj)
@@ -87,7 +89,8 @@ static vatic_object toObj(const xmlNodePtr & obj)
     std::string pose = get1stChildContent(obj, "pose");
     std::string truncated = get1stChildContent(obj, "truncated");
 
-    const xmlNodePtr bndBox = find1stChild(obj, "bndbox");
+    xmlNodePtr bndBox = nullptr;
+    bndBox = find1stChild(obj, "bndbox");
     std::string xmax = get1stChildContent(bndBox, "xmax");
     std::string xmin = get1stChildContent(bndBox, "xmin");
     std::string ymax = get1stChildContent(bndBox, "ymax");
