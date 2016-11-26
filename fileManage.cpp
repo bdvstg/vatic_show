@@ -23,21 +23,24 @@ static bool isConsistent(filenames_t xmls, filenames_t jpgs)
     return true;
 }
 
+// convert filenames to more compact format
+// it only hold basename and which folder belong
 static fileManage::frames_t toFrames(
     const filenames_t & xmls,
     const filenames_t & deletedXmls)
 {
     fileManage::frames_t frames;
+    // belong folder normal
     for each (auto name in xmls)
     {
-        name.erase(name.length() - 4, 4);
+        name.erase(name.length() - 4, 4); // remove extname
         fileManage::frame_t frame = { name, false };
         frames.push_back(frame);
     }
-
+    // belong folder deleted
     for each (auto name in deletedXmls)
     {
-        name.erase(name.length() - 4, 4);
+        name.erase(name.length() - 4, 4); // remove extname
         fileManage::frame_t frame = { name, true };
         frames.push_back(frame);
     }
