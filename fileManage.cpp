@@ -78,7 +78,7 @@ void fileManage::init()
         });
 }
 
-std::wstring fileManage::getImageName(int idx)
+std::wstring fileManage::getImageName(int idx) const
 {
     std::wstring extname = L".jpg";
     std::wstring fullname;
@@ -90,7 +90,7 @@ std::wstring fileManage::getImageName(int idx)
     return fullname;
 }
 
-std::wstring fileManage::getXmlName(int idx)
+std::wstring fileManage::getXmlName(int idx) const
 {
     std::wstring extname = L".xml";
     std::wstring fullname;
@@ -102,7 +102,7 @@ std::wstring fileManage::getXmlName(int idx)
     return fullname;
 }
 
-bool fileManage::isDeleted(int idx)
+bool fileManage::isDeleted(int idx) const
 {
     return frames[idx].isDeleted;
 }

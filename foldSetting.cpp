@@ -15,28 +15,28 @@ foldSetting::foldSetting(
 
 }
 
-std::wstring foldSetting::base() { return base_; }
-std::wstring foldSetting::annotations() { return annotations_; }
-std::wstring foldSetting::jpegImages() { return jpegImages_; }
-std::wstring foldSetting::deleteAnnotations() { return deleteAnnotations_; }
-std::wstring foldSetting::deleteJpegImages() { return deleteJpegImages_; }
+std::wstring foldSetting::base() const { return base_; }
+std::wstring foldSetting::annotations() const { return annotations_; }
+std::wstring foldSetting::jpegImages() const { return jpegImages_; }
+std::wstring foldSetting::deleteAnnotations() const { return deleteAnnotations_; }
+std::wstring foldSetting::deleteJpegImages() const { return deleteJpegImages_; }
 
-std::wstring foldSetting::fullAnnotations()
+std::wstring foldSetting::fullAnnotations() const
 {
     return base_ + L"\\" + annotations_;
 }
 
-std::wstring foldSetting::fullJpegImages()
+std::wstring foldSetting::fullJpegImages() const
 {
     return base_ + L"\\" + jpegImages_;
 }
 
-std::wstring foldSetting::fullDeleteAnnotations()
+std::wstring foldSetting::fullDeleteAnnotations() const
 {
     return base_ + L"\\" + deleteAnnotations_;
 }
 
-std::wstring foldSetting::fullDeleteJpegImages()
+std::wstring foldSetting::fullDeleteJpegImages() const
 {
     return base_ + L"\\" + deleteJpegImages_;
 }

@@ -14,16 +14,16 @@ public:
         std::wstring deleteJpegImagesName);
 
     
-    std::wstring base();
-    std::wstring annotations();
-    std::wstring jpegImages();
-    std::wstring deleteAnnotations();
-    std::wstring deleteJpegImages();
+    std::wstring base() const;
+    std::wstring annotations() const;
+    std::wstring jpegImages() const;
+    std::wstring deleteAnnotations() const;
+    std::wstring deleteJpegImages() const;
 
-    std::wstring fullAnnotations();
-    std::wstring fullJpegImages();
-    std::wstring fullDeleteAnnotations();
-    std::wstring fullDeleteJpegImages();
+    std::wstring fullAnnotations() const;
+    std::wstring fullJpegImages() const;
+    std::wstring fullDeleteAnnotations() const;
+    std::wstring fullDeleteJpegImages() const;
 
 private:
     std::wstring base_;
