@@ -295,6 +295,7 @@ int main(int argc, char **argv)
     data.files = fileManage(folds);
     data.files.init();
 
+    // so below code no need to prefix with "data."
     auto & files = data.files;
     auto & curFrame = data.curFrame;
     auto & objs = data.objs;
