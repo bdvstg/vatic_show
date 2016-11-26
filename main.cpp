@@ -25,7 +25,6 @@ std::atomic<bool> gDrawCurObj = false;
 std::atomic<bool> gDrawCurObjSide = false;
 
 void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs);
-void updateData();
 
 cv::Rect toRect(const vatic_object &obj)
 {
@@ -193,18 +192,13 @@ void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs)
 }
 
 static std::vector<char> gImgBuf;
-void updateData()
+void updateData(const fileManage &fmg, int idx)
 {
-    const std::wstring xml_name = folder + L"\\" + path_xml + L"\\" + gAllFilenames[gCurFrame];
-    std::wstring imgfile = gAllFilenames[gCurFrame];
-    imgfile.replace(imgfile.length() - 3, 3, L"jpg");
-    const std::wstring img_name = folder + L"\\" + path_img + L"\\" + imgfile;
-
     // update objects
-    gObjs = xml_vatic_pascal_parse(xml_name);
+    gObjs = xml_vatic_pascal_parse(fmg.getXmlName(idx));
 
     // update image
-    gImgBuf = ReadFile(img_name.c_str());
+    gImgBuf = ReadFile(fmg.getImageName(idx).c_str());
     gImg = cv::imdecode(gImgBuf, 1);
 }
 
@@ -247,7 +241,7 @@ int main(int argc, char **argv)
     cv::imshow("img", dummy);
     cv::setMouseCallback("img", onMouse);
 
-    updateData();
+    updateData(files, gCurFrame);
     cv::imshow("img", gImg); cv::waitKey(1);
     while(true)
     {
@@ -264,7 +258,7 @@ int main(int argc, char **argv)
         case KEY_PREV_FRAME:
             gCurFrame--;
             if (gCurFrame < 0) gCurFrame = 0;
-            updateData();
+            updateData(files, gCurFrame);
             if (gCurObj < 0) gCurObj = 0;
             if (gCurObj >= gObjs.size()) gCurObj = gObjs.size() - 1;
             render(); cv::waitKey(1);
@@ -273,7 +267,7 @@ int main(int argc, char **argv)
             gCurFrame++;
             if (gCurFrame >= gAllFilenames.size())
                 gCurFrame = gAllFilenames.size() - 1;
-            updateData();
+            updateData(files, gCurFrame);
             if (gCurObj < 0) gCurObj = gObjs.size() - 1;
             if (gCurObj >= gObjs.size()) gCurObj = 0;
             render(); cv::waitKey(1);
