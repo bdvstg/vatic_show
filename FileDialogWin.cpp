@@ -4,6 +4,9 @@
 #include <windows.h>
 #include <shobjidl.h> 
 #include <strsafe.h>
+
+#include "FileDialogWin.h"
+
 #pragma comment(lib, "User32.lib")
 
 
@@ -71,7 +74,7 @@ wchar_t* OpenFolderDialog()
 
 
 
-std::vector<std::wstring> listFiles(const wchar_t * dir_name)
+filenames_t listFiles(const wchar_t * dir_name)
 {
     WIN32_FIND_DATAW ffd;
     LARGE_INTEGER filesize;
@@ -93,12 +96,12 @@ std::vector<std::wstring> listFiles(const wchar_t * dir_name)
 
     if (INVALID_HANDLE_VALUE == hFind)
     {
-        return std::vector<std::wstring>();
+        return filenames_t();
     }
 
 
     // List all the files in the directory with some info about them.
-    std::vector<std::wstring> list;
+    filenames_t list;
     do
     {
         if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
@@ -118,14 +121,10 @@ std::vector<std::wstring> listFiles(const wchar_t * dir_name)
 }
 
 
-std::vector<std::wstring> getFileList()
+filenames_t getFileList()
 {
-    wchar_t* folder = OpenFolderDialog();
-    
-    std::vector<std::wstring> list = listFiles(folder);
-    
-
-
+    wchar_t* folder = OpenFolderDialog();    
+    auto list = listFiles(folder);
     return list;
 }
 

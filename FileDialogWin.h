@@ -4,16 +4,18 @@
 #include <vector>
 #include <string>
 
+using filenames_t = std::vector<std::wstring>;
+
 std::string w2mb(const wchar_t* w);
 
 // show a folder chooser dialog 
 wchar_t* OpenFolderDialog();
 
 // list files in directory
-std::vector<std::wstring> listFiles(const wchar_t * dir_name);
+filenames_t listFiles(const wchar_t * dir_name);
 
 // show a folder chooser dialog and list files inside
-std::vector<std::wstring> getFileList();
+filenames_t getFileList();
 
 // check a directory is exist or not
 bool isDirectoryExist(std::wstring dirPath);
