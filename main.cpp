@@ -11,16 +11,14 @@
 #include "ui_utils.h"
 #include <atomic>
 
-const std::wstring path_xml = L"Annotations";
-const std::wstring path_img = L"JPEGImages";
+const std::wstring foldNameXml = L"Annotations";
+const std::wstring foldNameImg = L"JPEGImages";
 
-std::wstring folder; // root folder (parent of Annotations and JPEGImages)
 std::vector<vatic_object> gObjs; // current images's all bndBoxs
 int gCurObj = 0; // which bndBox in gObjs
 RECT_DIR gCurObjSide = RECT_NONE;
 cv::Mat gImg; // current image
-std::vector<std::wstring> gAllFilenames; // hold all files's filename
-int gCurFrame; // current is nth file
+
 std::atomic<bool> gDrawCurObj = false;
 std::atomic<bool> gDrawCurObjSide = false;
 
@@ -99,7 +97,7 @@ void adjObj(vatic_object &obj, const RECT_DIR dir,
     }
 }
 
-void render(int x = -65535, int y = -65535)
+void render(const std::string caption, int x = -65535, int y = -65535)
 {
     cv::Mat draw = gImg.clone();
 
@@ -122,7 +120,7 @@ void render(int x = -65535, int y = -65535)
     }
 
     // draw filename
-    cv::putText(draw, w2mb(gAllFilenames[gCurFrame].c_str()), cv::Point(5, 20), 0, 0.8, cv::Scalar(30, 200, 30), 2);
+    cv::putText(draw, caption, cv::Point(5, 20), 0, 0.8, cv::Scalar(30, 200, 30), 2);
 
     // draw mouse pointer
     cv::circle(draw, cv::Point(x, y), 3, cv::Scalar(255, 0, 0), -1);
@@ -191,15 +189,15 @@ void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs)
     }
 }
 
-static std::vector<char> gImgBuf;
-void updateData(const fileManage &fmg, int idx)
+void updateData(const fileManage &fmg, int idx,
+    std::vector<vatic_object> &objs, cv::Mat &img)
 {
     // update objects
-    gObjs = xml_vatic_pascal_parse(fmg.getXmlName(idx));
+    objs = xml_vatic_pascal_parse(fmg.getXmlName(idx));
 
     // update image
-    gImgBuf = ReadFile(fmg.getImageName(idx).c_str());
-    gImg = cv::imdecode(gImgBuf, 1);
+    std::vector<char> imgBuf = ReadFile(fmg.getImageName(idx).c_str());
+    img = cv::imdecode(imgBuf, 1);
 }
 
 void checkPath(std::wstring basePath, std::wstring targetFolder)
@@ -217,37 +215,38 @@ void checkPath(std::wstring basePath, std::wstring targetFolder)
 
 int main(int argc, char **argv)
 {
-    folder = OpenFolderDialog();
+    // choose base folder (parent of Annotations and JPEGImages)
+    std::wstring baseFolder = OpenFolderDialog();
 
+    // setup folder setting
     auto folds = foldSetting(
-        folder,
-        L"Annotations",
-        L"JPEGImages",
-        L"deletedAnnotations",
-        L"deletedJPEGImages");
+        baseFolder,
+        foldNameXml,
+        foldNameImg,
+        L"deleted" + foldNameXml,
+        L"deleted" + foldNameImg);
+
+    // check Annotations and JPEGImages both exist
+    checkPath(folds.base(), folds.annotations());
+    checkPath(folds.base(), folds.jpegImages());
+
+    // setup file manage
     auto files = fileManage(folds);
     files.init();
 
-    const std::wstring fullPathXml = folder + L"\\" + path_xml;
-    const std::wstring fullPathImg = folder + L"\\" + path_img;
-    checkPath(folder, path_xml);
-    checkPath(folder, path_img);
-
-    gAllFilenames = listFiles(fullPathXml.c_str());
-
-    gCurFrame = 0;
+    int curFrame = 0;
 
     cv::Mat dummy(cv::Size(30, 30), CV_8UC3);
     cv::imshow("img", dummy);
     cv::setMouseCallback("img", onMouse);
 
-    updateData(files, gCurFrame);
+    updateData(files, curFrame, gObjs, gImg);
     cv::imshow("img", gImg); cv::waitKey(1);
     while(true)
     {
          cv::waitKey(1);
         int key = cv::waitKey(0);
-        
+        std::string caption = w2mb(files.getBaseName(curFrame).c_str());
         switch (key)
         {
         case CV_KEY_NONE:
@@ -256,25 +255,25 @@ int main(int argc, char **argv)
             exit(0);
             break;
         case KEY_PREV_FRAME:
-            gCurFrame--;
-            if (gCurFrame < 0) gCurFrame = 0;
-            updateData(files, gCurFrame);
+            curFrame--;
+            if (curFrame < 0) curFrame = 0;
+            updateData(files, curFrame, gObjs, gImg);
             if (gCurObj < 0) gCurObj = 0;
             if (gCurObj >= gObjs.size()) gCurObj = gObjs.size() - 1;
-            render(); cv::waitKey(1);
+            render(caption); cv::waitKey(1);
             break;
         case KEY_NEXT_FRAME:
-            gCurFrame++;
-            if (gCurFrame >= gAllFilenames.size())
-                gCurFrame = gAllFilenames.size() - 1;
-            updateData(files, gCurFrame);
+            curFrame++;
+            if (curFrame >= files.size())
+                curFrame = files.size() - 1;
+            updateData(files, curFrame, gObjs, gImg);
             if (gCurObj < 0) gCurObj = gObjs.size() - 1;
             if (gCurObj >= gObjs.size()) gCurObj = 0;
-            render(); cv::waitKey(1);
+            render(caption); cv::waitKey(1);
             break;
         case  CV_KEY_w:
             xml_vatic_pascal_modifyObjects(
-                fullPathXml + gAllFilenames[gCurFrame],
+                files.getXmlName(curFrame),
                 gObjs);
             break;
         case KEY_NEXT_OBJ:
@@ -291,19 +290,19 @@ int main(int argc, char **argv)
             break;
         case KEY_ADJ_UP:
             adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(0, -1), adjObj_Relative);
-            render();
+            render(caption);
             break;
         case KEY_ADJ_DOWN:
             adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(0, 1), adjObj_Relative);
-            render();
+            render(caption);
             break;
         case KEY_ADJ_LEFT:
             adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(-1, 0), adjObj_Relative);
-            render();
+            render(caption);
             break;
         case KEY_ADJ_RIGHT:
             adjObj(gObjs[gCurObj], gCurObjSide, cv::Point(1, 0), adjObj_Relative);
-            render();
+            render(caption);
             break;
         default:
             printf("%x\n", key);
