@@ -9,8 +9,8 @@
 #include "ui_utils.h"
 #include <atomic>
 
-const std::wstring path_xml = L"\\Annotations\\";
-const std::wstring path_img = L"\\JPEGImages\\";
+const std::wstring path_xml = L"Annotations";
+const std::wstring path_img = L"JPEGImages";
 std::wstring folder; // root folder (parent of Annotations and JPEGImages)
 std::vector<vatic_object> gObjs; // current images's all bndBoxs
 int gCurObj = 0; // which bndBox in gObjs
@@ -193,10 +193,10 @@ void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs)
 static std::vector<char> gImgBuf;
 void updateData()
 {
-    const std::wstring xml_name = folder + path_xml + gAllFilenames[gCurFrame];
+    const std::wstring xml_name = folder + L"\\" + path_xml + L"\\" + gAllFilenames[gCurFrame];
     std::wstring imgfile = gAllFilenames[gCurFrame];
     imgfile.replace(imgfile.length() - 3, 3, L"jpg");
-    const std::wstring img_name = folder + path_img + imgfile;
+    const std::wstring img_name = folder + L"\\" + path_img + L"\\" + imgfile;
 
     // update objects
     gObjs = xml_vatic_pascal_parse(xml_name);
@@ -206,10 +206,28 @@ void updateData()
     gImg = cv::imdecode(gImgBuf, 1);
 }
 
+void checkPath(std::wstring basePath, std::wstring targetFolder)
+{
+    const std::wstring fullPath = basePath + L"\\" + targetFolder;
+    if (!isDirectoryExist(fullPath))
+    {
+        showMessageBox(L"路徑不存在!!",
+            L"'" + fullPath + L"' 不存在\n" +
+            L"你選擇了資料夾 '" + basePath + L"'\n" +
+            L"此資料夾下必須要有資料夾 '" + targetFolder + L"'");
+        exit(1);
+    }
+}
+
 int main(int argc, char **argv)
 {
     folder = OpenFolderDialog();
-    gAllFilenames = listFiles((folder + path_xml).c_str());
+    const std::wstring fullPathXml = folder + L"\\" + path_xml;
+    const std::wstring fullPathImg = folder + L"\\" + path_img;
+    checkPath(folder, path_xml);
+    checkPath(folder, path_img);
+
+    gAllFilenames = listFiles(fullPathXml.c_str());
 
     gFrameNum = gAllFilenames.size();
     gCurFrame = 0;
@@ -250,7 +268,7 @@ int main(int argc, char **argv)
             break;
         case  CV_KEY_w:
             xml_vatic_pascal_modifyObjects(
-                folder + path_xml + gAllFilenames[gCurFrame],
+                fullPathXml + gAllFilenames[gCurFrame],
                 gObjs);
             break;
         case KEY_NEXT_OBJ:
