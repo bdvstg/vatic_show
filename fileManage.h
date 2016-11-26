@@ -17,6 +17,7 @@ public:
     };
     using frames_t = std::vector<frame_t>;
 
+    fileManage() = default;
     fileManage(foldSetting f);
     void init();
 

@@ -6,6 +6,7 @@
 class foldSetting
 {
 public:
+    foldSetting() = default;
     foldSetting(
         std::wstring basePath,
         std::wstring annotationsName,
