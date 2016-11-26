@@ -6,12 +6,11 @@ foldSetting::foldSetting(
     std::wstring jpegImagesName,
     std::wstring deleteAnnotationsName,
     std::wstring deleteJpegImagesName)
-    :
-    base_(basePath),
-    annotations_(annotationsName),
-    jpegImages_(jpegImagesName),
-    deleteAnnotations_(deleteAnnotationsName),
-    deleteJpegImages_(deleteJpegImagesName)
+    : base_(basePath)
+    , annotations_(annotationsName)
+    , jpegImages_(jpegImagesName)
+    , deleteAnnotations_(deleteAnnotationsName)
+    , deleteJpegImages_(deleteJpegImagesName)
 {
 
 }
