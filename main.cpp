@@ -1,15 +1,18 @@
+#include <atomic>
+#include <chrono>
+#include <map>
+#include <string>
+#include <thread>
+
 #include "opencvlib.h"
 #include "xml_vatic_pascal.h"
 #include "FileDialogWin.h"
 #include "fileManage.h"
 #include "foldSetting.h"
 #include "ReadFile.h"
-#include <string>
-#include <thread>
-#include <chrono>
 #include "cv_key_table.h"
 #include "ui_utils.h"
-#include <atomic>
+
 
 const std::wstring foldNameXml = L"Annotations";
 const std::wstring foldNameImg = L"JPEGImages";
@@ -250,6 +253,19 @@ static int jumpIndex(int cur, int jump, int max, int min, bool cycling)
     return cur;
 }
 
+std::map<int, int> jumpInt = {
+    { KEY_PREV_FRAME, -1 },
+    { KEY_NEXT_FRAME, 1 },
+    { KEY_PRVE_OBJ, -1 },
+    { KEY_NEXT_OBJ, 1 },
+};
+std::map<int, cv::Point> shiftPoint = {
+    { KEY_ADJ_UP, cv::Point(0, -1) },
+    { KEY_ADJ_DOWN, cv::Point(0, 1) },
+    { KEY_ADJ_LEFT, cv::Point(-1, 0) },
+    { KEY_ADJ_RIGHT, cv::Point(1, 0) },
+};
+
 int main(int argc, char **argv)
 {
     // choose base folder (parent of Annotations and JPEGImages)
@@ -304,14 +320,9 @@ int main(int argc, char **argv)
         case KEY_END:
             exit(0);
             break;
-        case KEY_PREV_FRAME:
-            curFrame = jumpIndex(curFrame, -1, files.size(), 0, false);
-            updateData(files, curFrame, objs, img);
-            curObj = jumpIndex(curObj, 0, objs.size(), 0, true);
-            render(data); cv::waitKey(1);
-            break;
-        case KEY_NEXT_FRAME:
-            curFrame = jumpIndex(curFrame, 1, files.size(), 0, false);
+        case KEY_PREV_FRAME: // jumpInt[KEY_PREV_FRAME] = -1
+        case KEY_NEXT_FRAME: // jumpInt[KEY_NEXT_FRAME] = 1
+            curFrame = jumpIndex(curFrame, jumpInt[key], files.size(), 0, false);
             updateData(files, curFrame, objs, img);
             curObj = jumpIndex(curObj, 0, objs.size(), 0, true);
             render(data); cv::waitKey(1);
@@ -321,28 +332,16 @@ int main(int argc, char **argv)
                 files.getXmlName(curFrame),
                 objs);
             break;
-        case KEY_NEXT_OBJ:
-            curObj = jumpIndex(curObj, 1, objs.size(), 0, true);
-            onMouse();
+        case KEY_NEXT_OBJ: // jumpInt[KEY_NEXT_OBJ] = 1
+        case KEY_PRVE_OBJ: // jumpInt[KEY_PRVE_OBJ] = -1
+            curObj = jumpIndex(curObj, jumpInt[key], objs.size(), 0, true);
+            onMouse(-65535,-65535,-65535,0,&data);
             break;
-        case KEY_PRVE_OBJ:
-            curObj = jumpIndex(curObj, -1, objs.size(), 0, true);
-            onMouse();
-            break;
-        case KEY_ADJ_UP:
-            adjObj(objs[curObj], curObjSide, cv::Point(0, -1), adjObj_Relative);
-            render(data);
-            break;
-        case KEY_ADJ_DOWN:
-            adjObj(objs[curObj], curObjSide, cv::Point(0, 1), adjObj_Relative);
-            render(data);
-            break;
-        case KEY_ADJ_LEFT:
-            adjObj(objs[curObj], curObjSide, cv::Point(-1, 0), adjObj_Relative);
-            render(data);
-            break;
-        case KEY_ADJ_RIGHT:
-            adjObj(objs[curObj], curObjSide, cv::Point(1, 0), adjObj_Relative);
+        case KEY_ADJ_UP:    // shiftPoint[KEY_ADJ_UP] = cv::Point(0, -1)
+        case KEY_ADJ_DOWN:  // shiftPoint[KEY_ADJ_DOWN] = cv::Point(0, 1) 
+        case KEY_ADJ_LEFT:  // shiftPoint[KEY_ADJ_LEFT] = cv::Point(-1, 0)
+        case KEY_ADJ_RIGHT: // shiftPoint[KEY_ADJ_RIGHT] = cv::Point(1, 0)
+            adjObj(objs[curObj], curObjSide, shiftPoint[key], adjObj_Relative);
             render(data);
             break;
         default:
