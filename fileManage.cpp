@@ -1,6 +1,7 @@
-#include "fileManage.h"
+#include <algorithm>
 
 #include "FileDialogWin.h"
+#include "fileManage.h"
 
 // is filenames(without extname) inside foldXml and foldJpg is all same
 static bool isConsistent(filenames_t xmls, filenames_t jpgs)
@@ -14,7 +15,7 @@ static bool isConsistent(filenames_t xmls, filenames_t jpgs)
         auto & jpgname = jpgs[i];
         // delete ext name
         xmlname.erase(xmlname.length() - 4, 4);
-        jpgname.erase(xmlname.length() - 4, 4);
+        jpgname.erase(jpgname.length() - 4, 4);
         // compare
         if (xmlname.compare(jpgname) != 0)
             return false; // not equal
@@ -44,6 +45,8 @@ static fileManage::frames_t toFrames(
         fileManage::frame_t frame = { name, true };
         frames.push_back(frame);
     }
+
+    return frames;
 }
 
 fileManage::fileManage(foldSetting f)
@@ -54,10 +57,10 @@ fileManage::fileManage(foldSetting f)
 
 void fileManage::init()
 {
-    auto xmls = listFiles(fold.fullAnnotations);
-    auto jpgs = listFiles(fold.fullJpegImages);
-    auto deletedXmls = listFiles(fold.fullDeleteAnnotations);
-    auto deletedJpgs = listFiles(fold.fullDeleteJpegImages);
+    auto xmls = listFiles(fold.fullAnnotations().c_str());
+    auto jpgs = listFiles(fold.fullJpegImages().c_str());
+    auto deletedXmls = listFiles(fold.fullDeleteAnnotations().c_str());
+    auto deletedJpgs = listFiles(fold.fullDeleteJpegImages().c_str());
 
     if (!isConsistent(xmls, jpgs))
         throw "filenames inside annotations and jpgimages is not same";
@@ -65,4 +68,12 @@ void fileManage::init()
         throw "filenames inside deleted annotations and jpgimages is not same";
 
     frames = toFrames(xmls, deletedXmls);
+
+    std::sort(frames.begin(), frames.end(),
+        [](const frame_t & a, const frame_t & b) -> bool
+        {
+            auto la = wcstol(a.baseName.c_str(), nullptr, 10);
+            auto lb = wcstol(b.baseName.c_str(), nullptr, 10);
+            return la < lb;
+        });
 }
