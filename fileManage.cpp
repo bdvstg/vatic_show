@@ -116,3 +116,30 @@ bool fileManage::isDeleted(int idx) const
 {
     return frames[idx].isDeleted;
 }
+
+void fileManage::move2deleted(int idx)
+{
+    if (frames[idx].isDeleted == true) return;
+
+    moveFile(fold.fullAnnotations() + L"\\" + frames[idx].baseName + L".xml",
+        fold.fullDeleteAnnotations() + L"\\" + frames[idx].baseName + L".xml");
+
+    moveFile(fold.fullJpegImages() + L"\\" + frames[idx].baseName + L".jpg",
+        fold.fullDeleteJpegImages() + L"\\" + frames[idx].baseName + L".jpg");
+
+    frames[idx].isDeleted = true;
+}
+
+
+void fileManage::move2normal(int idx)
+{
+    if (frames[idx].isDeleted == false) return;
+
+    moveFile(fold.fullDeleteAnnotations() + L"\\" + frames[idx].baseName + L".xml",
+        fold.fullAnnotations() + L"\\" + frames[idx].baseName + L".xml");
+
+    moveFile(fold.fullDeleteJpegImages() + L"\\" + frames[idx].baseName + L".jpg",
+        fold.fullJpegImages() + L"\\" + frames[idx].baseName + L".jpg");
+
+    frames[idx].isDeleted = false;
+}

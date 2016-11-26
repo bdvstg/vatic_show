@@ -27,6 +27,9 @@ public:
     std::wstring getXmlName(int idx) const;
     bool isDeleted(int idx) const;
 
+    void move2deleted(int idx);
+    void move2normal(int idx);
+
 private:
     foldSetting fold;
     frames_t frames; // more compact struct to hold all filenames

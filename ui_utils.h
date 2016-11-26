@@ -13,6 +13,9 @@
 #define KEY_ADJ_UP     CV_KEY_NUMPAD_8
 #define KEY_ADJ_DOWN   CV_KEY_NUMPAD_2
 #define KEY_END        CV_KEY_ESC
+#define KEY_SAVE       CV_KEY_CtrlS
+#define KEY_DEL_FRAME  CV_KEY_Delete
+#define KEY_INS_FRAME  CV_KEY_Insert
 typedef enum
 {
     RECT_NONE = -1,

@@ -136,8 +136,17 @@ void render(const uiDatas &data, int x = -65535, int y = -65535)
     }
 
     // draw filename
-    std::string caption = w2mb(data.files.getBaseName(data.curFrame).c_str());
-    cv::putText(draw, caption, cv::Point(5, 20), 0, 0.8, cv::Scalar(30, 200, 30), 2);
+    std::string baseName = w2mb(data.files.getBaseName(data.curFrame).c_str());
+    if (!data.files.isDeleted(data.curFrame))
+    {
+        std::string caption = baseName;
+        cv::putText(draw, caption, cv::Point(5, 20), 0, 0.8, cv::Scalar(30, 200, 30), 2);
+    }
+    else
+    {
+        std::string caption = baseName + "  DELETED !!!";
+        cv::putText(draw, caption, cv::Point(5, 30), 0, 1.0, cv::Scalar(30, 30, 230), 2);
+    }
 
     // draw mouse pointer
     cv::circle(draw, cv::Point(x, y), 3, cv::Scalar(255, 0, 0), -1);
@@ -328,8 +337,7 @@ int main(int argc, char **argv)
             curObj = jumpIndex(curObj, 0, objs.size(), 0, true);
             render(data); cv::waitKey(1);
             break;
-        case CV_KEY_w:
-        case CV_KEY_CtrlS:
+        case KEY_SAVE:
             xml_vatic_pascal_modifyObjects(
                 files.getXmlName(curFrame),
                 objs);
@@ -344,6 +352,14 @@ int main(int argc, char **argv)
         case KEY_ADJ_LEFT:  // shiftPoint[KEY_ADJ_LEFT] = cv::Point(-1, 0)
         case KEY_ADJ_RIGHT: // shiftPoint[KEY_ADJ_RIGHT] = cv::Point(1, 0)
             adjObj(objs[curObj], curObjSide, shiftPoint[key], adjObj_Relative);
+            render(data);
+            break;
+        case KEY_DEL_FRAME:
+            data.files.move2deleted(curFrame);
+            render(data);
+            break;
+        case KEY_INS_FRAME:
+            data.files.move2normal(curFrame);
             render(data);
             break;
         default:

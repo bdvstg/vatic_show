@@ -74,6 +74,8 @@
 #define CV_KEY_ESC (27)
 #define CV_KEY_NONE (-1)
 #define CV_KEY_CtrlS (0x13)
+#define CV_KEY_Delete (0x2e0000)
+#define CV_KEY_Insert (0x2d0000)
 
 #endif
 
