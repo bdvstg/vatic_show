@@ -31,8 +31,9 @@ if(WIN32)
     add_compile_options(/wd4996)
 endif()
 
-qt5_add_translation(TRANSLATIONS *.ts)
-add_executable(vatic_show "*.cpp" ${TRANSLATIONS})
+#qt5_add_translation(TRANSLATIONS *.ts)
+file(GLOB SOURCES *.cpp)
+add_executable(vatic_show ${SOURCES})# ${TRANSLATIONS})
 
 target_link_libraries(vatic_show
     ${OpenCV_LIBS}
