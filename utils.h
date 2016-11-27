@@ -1,5 +1,5 @@
-#ifndef ui_utils_H__
-#define ui_utils_H__
+#ifndef utils_H__
+#define utils_H__
 
 #include "opencvlib.h"
 #include "cv_key_table.h"
