@@ -4,8 +4,22 @@ cmake_minimum_required(VERSION 3.0)
 
 project(vatic_show)
 
-find_package(OpenCV REQUIRED)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
+find_package(Cereal REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(Qt5
+        COMPONENTS
+            Gui
+            LinguistTools
+            Widgets
+        REQUIRED)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+
+include_directories(${Cereal_INCLUDE_DIRS})
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(include)
@@ -17,11 +31,14 @@ if(WIN32)
     add_compile_options(/wd4996)
 endif()
 
-add_executable(vatic_show "*.cpp")
+qt5_add_translation(TRANSLATIONS *.ts)
+add_executable(vatic_show "*.cpp" ${TRANSLATIONS})
 
 target_link_libraries(vatic_show
-   ${OpenCV_LIBS}
-   iconv
-   zdll
-   libxml2
-   User32)
+    ${OpenCV_LIBS}
+    iconv
+    zdll
+    libxml2
+    User32
+    Qt5::Gui
+    Qt5::Widgets)
