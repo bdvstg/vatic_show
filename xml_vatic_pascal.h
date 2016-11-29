@@ -11,6 +11,7 @@ typedef struct vatic_object_
     int xmin;
     int ymax;
     int ymin;
+    // below is don't care now, but need write back to file
     int difficult;
     int occluded;
     std::string pose;
@@ -21,6 +22,10 @@ std::vector<vatic_object> xml_vatic_pascal_parse(std::wstring filename);
 
 void xml_vatic_pascal_modifyObjects(std::wstring filename,
     const std::vector<vatic_object> &objs);
+
+std::vector<std::string> xml_vatic_get_names(
+    const std::vector<vatic_object> &objs,
+    bool prefixNum = true);
 
 #endif
 
