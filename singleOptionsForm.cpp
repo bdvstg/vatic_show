@@ -8,7 +8,7 @@ singleOptionsForm::singleOptionsForm(QWidget *parent, Qt::WindowFlags flags)
     mScrollArea->setHidden(false);
     mScrollArea->setWidget(this);
     mScrollArea->setWidgetResizable(true);
-    this->layout()->setSpacing(1);
+    this->layout()->setSpacing(10);
 }
 
 void singleOptionsForm::clearOptions()
@@ -37,7 +37,8 @@ void singleOptionsForm::setOptions(const std::vector<std::string> options)
     for (int i = 0; i < mOptions.size(); i++)
     {
         mOptions[i] = new QRadioButton();
-        mOptions[i]->setStyleSheet("::indicator { width: 30px; height: 30px; }");
+        mOptions[i]->setStyleSheet("::indicator { height: 50px; }");
+        mOptions[i]->setStyleSheet("font-size: 30px;");
         mOptions[i]->setText(options[i].c_str());
         this->layout()->addWidget(mOptions[i]);
     }
