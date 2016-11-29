@@ -4,6 +4,9 @@
 #include <string>
 #include <thread>
 
+#include "Application.h"
+#include "singleOptionsForm.h"
+
 #include "opencvlib.h"
 #include "xml_vatic_pascal.h"
 #include "FileDialogWin.h"
@@ -334,12 +337,35 @@ int main(int argc, char **argv)
     cv::imshow("img", dummy);
     cv::setMouseCallback("img", onMouse, &data);
 
+    QScopedPointer<Application> a;
+    QScopedPointer<singleOptionsForm> w;
+    if (QApplication::instance() == nullptr)
+    {
+        a.reset(new Application(argc, argv));
+    }
+    w.reset(new singleOptionsForm());
+    w->setOptions({
+        "car",
+        "person",
+        "bike",
+        "motor",
+        "trunk",
+        "human",
+        "ufo",
+        "tiger",
+        "food",
+        "hanburger",
+        "shit",
+    });
+    w->show();
+
     updateData(files, curFrame, objs, img);
     cv::imshow("img", img); cv::waitKey(1);
     while(true)
     {
+        QApplication::processEvents();
          cv::waitKey(1);
-        int key = cv::waitKey(0);
+        int key = cv::waitKey(1);
 
         switch (key)
         {
