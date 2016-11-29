@@ -47,5 +47,10 @@ Lint_t rectLine(const cv::Rect &roi, const RECT_DIR dir);
 // draw bndBox to img
 void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs);
 
+// prefix a number to string
+std::string prefixNumber(int num, const std::string &str);
+std::vector<std::string> prefixNumber(
+    const std::vector<std::string> &str);
+
 #endif
 

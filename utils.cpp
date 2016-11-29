@@ -94,7 +94,24 @@ void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs)
     for (auto obj : objs)
     {
         const cv::Point tl(obj.xmin, obj.ymin - 10);
-        cv::putText(img, std::to_string(i) + " " + obj.name, tl, 0, 0.8, cv::Scalar(0, 0, 200), 2);
+        cv::putText(img, prefixNumber(i, obj.name), tl,
+            0, 0.8, cv::Scalar(0, 0, 200), 2);
         i++;
     }
+}
+
+std::string prefixNumber(int num, const std::string &str)
+{
+    return std::to_string(num) + ". " + str;
+}
+
+std::vector<std::string> prefixNumber(
+    const std::vector<std::string> &str)
+{
+    std::vector<std::string> prefixs(str.size());
+    for (int i = 0; i < str.size(); i++)
+    {
+        prefixs[i] = prefixNumber(i, str[i]);
+    }
+    return prefixs;
 }

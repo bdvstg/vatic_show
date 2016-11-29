@@ -192,14 +192,12 @@ void xml_vatic_pascal_modifyObjects(std::wstring filename,
 }
 
 std::vector<std::string> xml_vatic_get_names(
-    const std::vector<vatic_object> &objs,
-    bool prefixNum)
+    const std::vector<vatic_object> &objs)
 {
     std::vector<std::string> names(objs.size());
     for (size_t i = 0; i < objs.size(); i++)
     {        
-        names[i] = objs[i].name;
-        if (prefixNum)
-            names[i] = std::to_string(i) + ". " + names[i];
+        names[i] = objs[i].name;        
     }
+    return names;
 }
