@@ -3,6 +3,7 @@
 
 #include "opencvlib.h"
 #include "cv_key_table.h"
+#include "xml_vatic_pascal.h"
 
 #define KEY_NEXT_FRAME CV_KEY_RIGHT
 #define KEY_PREV_FRAME CV_KEY_LEFT
@@ -42,6 +43,9 @@ RECT_DIR rectDir(const cv::Rect &roi, const cv::Point &p);
 
 // get a line of roi dir side
 Lint_t rectLine(const cv::Rect &roi, const RECT_DIR dir);
+
+// draw bndBox to img
+void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs);
 
 #endif
 

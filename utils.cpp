@@ -79,3 +79,22 @@ Lint_t rectLine(const cv::Rect &roi, const RECT_DIR dir)
 
     return { p1,p2 };
 }
+
+void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs)
+{
+    for (auto obj : objs)
+    {
+        const cv::Point tl(obj.xmin, obj.ymin);
+        const cv::Point br(obj.xmax, obj.ymax);
+        const cv::Rect bndbox = cv::Rect(tl, br);
+        cv::rectangle(img, bndbox, cv::Scalar(0, 0, 200), 2);
+    }
+
+    int i = 0;
+    for (auto obj : objs)
+    {
+        const cv::Point tl(obj.xmin, obj.ymin - 10);
+        cv::putText(img, std::to_string(i) + " " + obj.name, tl, 0, 0.8, cv::Scalar(0, 0, 200), 2);
+        i++;
+    }
+}

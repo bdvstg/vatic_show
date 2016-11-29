@@ -41,8 +41,6 @@ void initUiDatas(uiDatas &data)
     data.curFrame = 0;
 }
 
-void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs);
-
 cv::Rect toRect(const vatic_object &obj)
 {
     const cv::Point tl(obj.xmin, obj.ymin);
@@ -203,23 +201,6 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
     render(data, x, y);
 }
 
-void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs)
-{
-    for (auto obj : objs)
-    {
-        const cv::Point tl(obj.xmin, obj.ymin);
-        const cv::Point br(obj.xmax, obj.ymax);
-        const cv::Rect bndbox = cv::Rect(tl, br);
-        cv::rectangle(img, bndbox, cv::Scalar(0, 0, 200), 2);
-    }
-
-    for (auto obj : objs)
-    {
-        const cv::Point tl(obj.xmin, obj.ymin-10);
-        cv::putText(img, obj.name, tl, 0, 0.8, cv::Scalar(0, 0, 200), 2);
-    }
-}
-
 void updateData(const fileManage &fmg, int idx,
     std::vector<vatic_object> &objs, cv::Mat &img)
 {
@@ -296,6 +277,8 @@ std::map<int, cv::Point> shiftPoint = {
     { KEY_ADJ_RIGHT, cv::Point(1, 0) },
 };
 
+
+
 int main(int argc, char **argv)
 {
     // choose base folder (parent of Annotations and JPEGImages)
@@ -337,14 +320,15 @@ int main(int argc, char **argv)
     cv::imshow("img", dummy);
     cv::setMouseCallback("img", onMouse, &data);
 
-    QScopedPointer<Application> a;
-    QScopedPointer<singleOptionsForm> w;
+    QScopedPointer<Application> qApplication;
     if (QApplication::instance() == nullptr)
     {
-        a.reset(new Application(argc, argv));
+        qApplication.reset(new Application(argc, argv));
     }
-    w.reset(new singleOptionsForm());
-    w->setOptions({
+
+    QScopedPointer<singleOptionsForm> boxsForm;
+    boxsForm.reset(new singleOptionsForm());
+    boxsForm->setOptions({
         "car",
         "person",
         "bike",
@@ -357,13 +341,15 @@ int main(int argc, char **argv)
         "hanburger",
         "shit",
     });
-    w->show();
+
+    boxsForm->show();
 
     updateData(files, curFrame, objs, img);
     cv::imshow("img", img); cv::waitKey(1);
     while(true)
     {
-        //QApplication::processEvents();
+
+        QApplication::processEvents();
         //cv::waitKey(1);
         int key = cv::waitKey(1);
 
