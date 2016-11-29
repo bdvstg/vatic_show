@@ -363,8 +363,8 @@ int main(int argc, char **argv)
     cv::imshow("img", img); cv::waitKey(1);
     while(true)
     {
-        QApplication::processEvents();
-         cv::waitKey(1);
+        //QApplication::processEvents();
+        //cv::waitKey(1);
         int key = cv::waitKey(1);
 
         switch (key)
