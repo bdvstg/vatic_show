@@ -33,7 +33,8 @@ endif()
 
 #qt5_add_translation(TRANSLATIONS *.ts)
 file(GLOB SOURCES *.cpp)
-add_executable(vatic_show ${SOURCES})# ${TRANSLATIONS})
+file(GLOB HEADERS *.h)
+add_executable(vatic_show ${SOURCES} ${HEADERS})# ${TRANSLATIONS})
 
 target_link_libraries(vatic_show
     ${OpenCV_LIBS}
