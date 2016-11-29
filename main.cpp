@@ -328,20 +328,6 @@ int main(int argc, char **argv)
 
     QScopedPointer<singleOptionsForm> boxsForm;
     boxsForm.reset(new singleOptionsForm());
-    boxsForm->setOptions({
-        "car",
-        "person",
-        "bike",
-        "motor",
-        "trunk",
-        "human",
-        "ufo",
-        "tiger",
-        "food",
-        "hanburger",
-        "shit",
-    });
-
     boxsForm->show();
 
     updateData(files, curFrame, objs, img);
@@ -363,9 +349,12 @@ int main(int argc, char **argv)
         case KEY_PREV_FRAME: // jumpInt[KEY_PREV_FRAME] = -1
         case KEY_NEXT_FRAME: // jumpInt[KEY_NEXT_FRAME] = 1
             curFrame = jumpIndex(curFrame, jumpInt[key], files.size(), 0, false);
-            updateData(files, curFrame, objs, img);
+            updateData(files, curFrame, objs, img);            
             curObj = jumpIndex(curObj, 0, objs.size(), 0, true);
             render(data); cv::waitKey(1);
+
+            boxsForm->setOptions(prefixNumber(xml_vatic_get_names(objs)));
+            boxsForm->setSelected(curObj);
             break;
         case KEY_SAVE:
             xml_vatic_pascal_modifyObjects(
@@ -376,6 +365,7 @@ int main(int argc, char **argv)
         case KEY_PRVE_OBJ: // jumpInt[KEY_PRVE_OBJ] = -1
             curObj = jumpIndex(curObj, jumpInt[key], objs.size(), 0, true);
             onMouse(-65535,-65535,-65535,0,&data);
+            boxsForm->setSelected(curObj);
             break;
         case KEY_ADJ_UP:    // shiftPoint[KEY_ADJ_UP] = cv::Point(0, -1)
         case KEY_ADJ_DOWN:  // shiftPoint[KEY_ADJ_DOWN] = cv::Point(0, 1) 
