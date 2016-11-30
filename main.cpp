@@ -327,11 +327,13 @@ int main(int argc, char **argv)
     }
 
     QScopedPointer<singleOptionsForm> boxsForm;
-    boxsForm.reset(new singleOptionsForm());
+    boxsForm.reset(new singleOptionsForm("Bounding Boxes"));
     boxsForm->show();
 
     updateData(files, curFrame, objs, img);
-    cv::imshow("img", img); cv::waitKey(1);
+    boxsForm->setOptions(prefixNumber(xml_vatic_get_names(objs)));
+    boxsForm->setSelected(curObj);
+    render(data); cv::waitKey(1);
     while(true)
     {
         //QApplication::processEvents();
