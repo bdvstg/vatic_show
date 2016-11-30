@@ -18,7 +18,6 @@ void singleOptionsForm::clearOptions()
         for (int i = 0; i < mOptions.size(); i++)
         {
             this->layout()->removeWidget(mOptions[i]);
-            mOptions[i]->~QRadioButton();
             delete mOptions[i];
             mOptions[i] = nullptr;
         }
