@@ -41,7 +41,7 @@ void singleOptionsForm::setOptions(const std::vector<std::string> options)
         mOptions[i]->setStyleSheet("::indicator { height: 50px; }");
         mOptions[i]->setStyleSheet("font-size: 30px;");
         mOptions[i]->setText(options[i].c_str());
-        connect(mOptions[i], SIGNAL(toggled(bool)), this, SLOT(on_radioButtons_toggled(bool)));
+        connect(mOptions[i], SIGNAL(toggled(bool)), this, SLOT(radioButtons_toggled(bool)));
         this->layout()->addWidget(mOptions[i]);
     }
 }
@@ -84,7 +84,7 @@ int singleOptionsForm::getSelected() const
     return selected;
 }
 
-void singleOptionsForm::on_radioButtons_toggled(bool checked)
+void singleOptionsForm::radioButtons_toggled(bool checked)
 {
     int selected = getSelected();
     if (mCallBackSelectedChange)

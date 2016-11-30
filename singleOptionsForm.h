@@ -34,7 +34,7 @@ private:
     void clearOptions();
 
 private slots:
-    void on_radioButtons_toggled(bool checked);
+    void radioButtons_toggled(bool checked);
 };
 
 #endif
