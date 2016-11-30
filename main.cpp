@@ -260,8 +260,8 @@ void checkPath(std::wstring basePath, std::wstring targetFolder)
 std::map<int, int> jumpInt = {
     { KEY_PREV_FRAME, -1 },
     { KEY_NEXT_FRAME, 1 },
-    { KEY_PRVE_OBJ, -1 },
-    { KEY_NEXT_OBJ, 1 },
+    { KEY_PRVE_OBJ, 1 },
+    { KEY_NEXT_OBJ, -1 },
 };
 std::map<int, cv::Point> shiftPoint = {
     { KEY_ADJ_UP, cv::Point(0, -1) },
