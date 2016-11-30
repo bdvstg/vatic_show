@@ -145,7 +145,8 @@ cv::Rect toRect(const vatic_object &obj)
 }
 
 void adjObj(vatic_object &obj, const RECT_DIR dir,
-    const cv::Point &shift, adjObj_Method method)
+    const cv::Point &shift, const cv::Size &imageSize,
+    adjObj_Method method)
 {
     const int width = obj.xmax - obj.xmin;
     const int height = obj.ymax - obj.ymin;
@@ -204,4 +205,13 @@ void adjObj(vatic_object &obj, const RECT_DIR dir,
         else if (dir == RECT_RIGHT)
             obj.xmax = obj.xmin + minWidth;
     }
+
+    // filter with image roi
+    const auto img = cv::Rect(cv::Point(0, 0), imageSize);
+    const auto box = toRect(obj);
+    const auto intersec = img & box;
+    obj.xmin = intersec.tl().x;
+    obj.ymin = intersec.tl().y;
+    obj.xmax = intersec.br().x;
+    obj.ymax = intersec.br().y;
 }

@@ -61,7 +61,8 @@ typedef enum {
     adjObj_Relative = 1,
 } adjObj_Method;
 void adjObj(vatic_object &obj, const RECT_DIR dir,
-    const cv::Point &shift, adjObj_Method method = adjObj_Absolute);
+    const cv::Point &shift, const cv::Size &imageSize,
+    adjObj_Method method = adjObj_Absolute);
 
 #endif
 

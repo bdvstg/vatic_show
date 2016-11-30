@@ -120,7 +120,8 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
                     || event == CV_EVENT_LBUTTONUP
                     || event == CV_EVENT_MOUSEMOVE))
             {
-                adjObj(targetObj, dir, mousePos, adjObj_Absolute);
+                adjObj(targetObj, dir, mousePos, data.img.size(),
+                    adjObj_Absolute);
             }
 
             // update 
@@ -306,7 +307,8 @@ int main(int argc, char **argv)
         case KEY_ADJ_DOWN:  // shiftPoint[KEY_ADJ_DOWN] = cv::Point(0, 1) 
         case KEY_ADJ_LEFT:  // shiftPoint[KEY_ADJ_LEFT] = cv::Point(-1, 0)
         case KEY_ADJ_RIGHT: // shiftPoint[KEY_ADJ_RIGHT] = cv::Point(1, 0)
-            adjObj(objs[curObj], curObjSide, shiftPoint[key], adjObj_Relative);
+            adjObj(objs[curObj], curObjSide, shiftPoint[key], img.size(),
+                adjObj_Relative);
             render(data);
             break;
         case KEY_DEL_FRAME:
