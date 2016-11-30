@@ -52,5 +52,6 @@ std::string prefixNumber(int num, const std::string &str);
 std::vector<std::string> prefixNumber(
     const std::vector<std::string> &str);
 
+int jumpIndex(int cur, int jump, int max, int min, bool cycling);
 #endif
 

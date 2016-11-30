@@ -206,15 +206,24 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
     render(data, x, y);
 }
 
-void updateData(const fileManage &fmg, int idx,
-    std::vector<vatic_object> &objs, cv::Mat &img)
+void updateUIs(uiDatas &data)
+{
+    data.bndBox->setOptions(prefixNumber(xml_vatic_get_names(data.objs)));
+    data.bndBox->setSelected(data.curObj);
+    render(data);
+}
+
+void updateData(const fileManage &fmg, int idx, uiDatas &data)
 {
     // update objects
-    objs = xml_vatic_pascal_parse(fmg.getXmlName(idx));
+    data.objs = xml_vatic_pascal_parse(fmg.getXmlName(idx));
 
     // update image
     std::vector<char> imgBuf = ReadFile(fmg.getImageName(idx).c_str());
-    img = cv::imdecode(imgBuf, 1);
+    data.img = cv::imdecode(imgBuf, 1);
+
+    // ensure curObj not out of index
+    data.curObj = jumpIndex(data.curObj, 0, data.objs.size(), 0, true);
 }
 
 void showHelp()
@@ -246,27 +255,6 @@ void checkPath(std::wstring basePath, std::wstring targetFolder)
             L"此資料夾下必須要有資料夾 '" + targetFolder + L"'");
         exit(1);
     }
-}
-
-static int jumpIndex(int cur, int jump, int max, int min, bool cycling)
-{
-    if (max <= min) throw "unexpected behavior!";
-    jump %= (max - min);
-    cur += jump;
-
-    if (cur >= max)
-        if (cycling)
-            cur = min + (cur - max);
-        else
-            cur = max - 1;
-
-    if (cur < min)
-        if (cycling)
-            cur = max - (min - cur);
-        else
-            cur = min;
-
-    return cur;
 }
 
 std::map<int, int> jumpInt = {
@@ -331,7 +319,7 @@ int main(int argc, char **argv)
         qApplication.reset(new Application(argc, argv));
     }
 
-    QScopedPointer<singleOptionsForm> boxsForm, classes;
+    QScopedPointer<singleOptionsForm> boxsForm, classesForm;
     boxsForm.reset(new singleOptionsForm("Bounding Boxes"));
     boxsForm->setCallbackSelectedChange(
         [&data](int selected) -> void
@@ -342,15 +330,22 @@ int main(int argc, char **argv)
     boxsForm->show();
     data.bndBox = boxsForm.data();
 
-    classes.reset(new singleOptionsForm("Classes"));
-    classes->setOptions({ "motorbike", "car", "bike", "person", "bus", });
-    classes->show();
-    data.classes = classes.data();
+    classesForm.reset(new singleOptionsForm("Classes"));
+    const std::vector<std::string> classes = {
+        "motorbike", "car", "bike", "person", "bus",
+    };
+    classesForm->setOptions(classes);
+    classesForm->setCallbackSelectedChange(
+        [&data,classes](int selected) -> void
+        {
+            data.objs[data.curObj].name = classes[selected];
+            updateUIs(data);
+        });
+    classesForm->show();
+    data.classes = classesForm.data();
 
-    updateData(files, curFrame, objs, img);
-    boxsForm->setOptions(prefixNumber(xml_vatic_get_names(objs)));
-    boxsForm->setSelected(curObj);
-    render(data); cv::waitKey(1);
+    updateData(files, curFrame, data);
+    updateUIs(data);
     while(true)
     {
         //QApplication::processEvents();
@@ -367,12 +362,8 @@ int main(int argc, char **argv)
         case KEY_PREV_FRAME: // jumpInt[KEY_PREV_FRAME] = -1
         case KEY_NEXT_FRAME: // jumpInt[KEY_NEXT_FRAME] = 1
             curFrame = jumpIndex(curFrame, jumpInt[key], files.size(), 0, false);
-            updateData(files, curFrame, objs, img);            
-            curObj = jumpIndex(curObj, 0, objs.size(), 0, true);
-            render(data); cv::waitKey(1);
-
-            boxsForm->setOptions(prefixNumber(xml_vatic_get_names(objs)));
-            boxsForm->setSelected(curObj);
+            updateData(files, curFrame, data);
+            updateUIs(data);
             break;
         case KEY_SAVE:
             xml_vatic_pascal_modifyObjects(
