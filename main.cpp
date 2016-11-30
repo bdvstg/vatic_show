@@ -333,13 +333,19 @@ int main(int argc, char **argv)
 
     QScopedPointer<singleOptionsForm> boxsForm, classes;
     boxsForm.reset(new singleOptionsForm("Bounding Boxes"));
-    classes.reset(new singleOptionsForm("Classes"));
-    data.bndBox = boxsForm.data();
-    data.classes = classes.data();
+    boxsForm->setCallbackSelectedChange(
+        [&data](int selected) -> void
+        {
+            data.curObj = selected;
+            render(data);
+        });
     boxsForm->show();
-    classes->show();
+    data.bndBox = boxsForm.data();
 
+    classes.reset(new singleOptionsForm("Classes"));
     classes->setOptions({ "motorbike", "car", "bike", "person", "bus", });
+    classes->show();
+    data.classes = classes.data();
 
     updateData(files, curFrame, objs, img);
     boxsForm->setOptions(prefixNumber(xml_vatic_get_names(objs)));

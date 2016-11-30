@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <functional>
 
 #include <QRadioButton>
 #include <QScopedPointer>
@@ -21,14 +22,18 @@ public:
 
     void setOptions(const std::vector<std::string> options);
     void setSelected(int i);
+    void setCallbackSelectedChange(std::function<void(int)> f);
     int getSelected() const;
 
 private:
     Ui::emptyForm ui;
     std::vector<QRadioButton*> mOptions;
     QScopedPointer<QScrollArea> mScrollArea;
-
+    std::function<void(int)> mCallBackSelectedChange;
     void clearOptions();
+
+private slots:
+    void on_radioButtons_toggled(bool checked);
 };
 
 #endif
