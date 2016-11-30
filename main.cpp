@@ -46,79 +46,6 @@ void initUiDatas(uiDatas &data)
     data.classes = nullptr;
 }
 
-cv::Rect toRect(const vatic_object &obj)
-{
-    const cv::Point tl(obj.xmin, obj.ymin);
-    const cv::Point br(obj.xmax, obj.ymax);
-    return cv::Rect(tl, br);
-}
-
-typedef enum {
-    adjObj_Absolute = 0,
-    adjObj_Relative = 1,
-} adjObj_Method;
-void adjObj(vatic_object &obj, const RECT_DIR dir,
-    const cv::Point &shift, adjObj_Method method = adjObj_Absolute)
-{
-    const int width = obj.xmax - obj.xmin;
-    const int height = obj.ymax - obj.ymin;
-    const int minWidth = 6;
-    const int minHeight = 10;
-
-    if (method == adjObj_Absolute)
-    {
-        if (dir == RECT_UP)
-            obj.ymin = shift.y;
-        else if (dir == RECT_DOWN)
-            obj.ymax = shift.y;
-        else if (dir == RECT_LEFT)
-            obj.xmin = shift.x;
-        else if (dir == RECT_RIGHT)
-            obj.xmax = shift.x;
-        else if (dir == RECT_CENTER)
-        {
-            obj.xmin = shift.x - (width / 2);
-            obj.xmax = shift.x + (width / 2);
-            obj.ymin = shift.y - (height / 2);
-            obj.ymax = shift.y + (height / 2);
-        }
-    }
-    else if (method == adjObj_Relative)
-    {
-        if (dir == RECT_UP)
-            obj.ymin += shift.y;
-        else if (dir == RECT_DOWN)
-            obj.ymax += shift.y;
-        else if (dir == RECT_LEFT)
-            obj.xmin += shift.x;
-        else if (dir == RECT_RIGHT)
-            obj.xmax += shift.x;
-        else if (dir == RECT_CENTER)
-        {
-            obj.ymin += shift.y;
-            obj.ymax += shift.y;
-            obj.xmin += shift.x;
-            obj.xmax += shift.x;
-        }
-    }
-
-    // ensure not small than min box
-    if (height < minHeight)
-    {
-        if (dir == RECT_UP)
-            obj.ymin = obj.ymax - minHeight;
-        else if (dir == RECT_DOWN)
-            obj.ymax = obj.ymin + minHeight;
-    }
-    if (width < minWidth)
-    {
-        if (dir == RECT_LEFT)
-            obj.xmin = obj.xmax - minWidth;
-        else if (dir == RECT_RIGHT)
-            obj.xmax = obj.xmin + minWidth;
-    }
-}
-
 void render(const uiDatas &data, int x = -65535, int y = -65535)
 {
     cv::Mat draw = data.img.clone();
@@ -269,8 +196,6 @@ std::map<int, cv::Point> shiftPoint = {
     { KEY_ADJ_LEFT, cv::Point(-1, 0) },
     { KEY_ADJ_RIGHT, cv::Point(1, 0) },
 };
-
-
 
 int main(int argc, char **argv)
 {

@@ -53,5 +53,15 @@ std::vector<std::string> prefixNumber(
     const std::vector<std::string> &str);
 
 int jumpIndex(int cur, int jump, int max, int min, bool cycling);
+
+cv::Rect toRect(const vatic_object &obj);
+
+typedef enum {
+    adjObj_Absolute = 0,
+    adjObj_Relative = 1,
+} adjObj_Method;
+void adjObj(vatic_object &obj, const RECT_DIR dir,
+    const cv::Point &shift, adjObj_Method method = adjObj_Absolute);
+
 #endif
 
