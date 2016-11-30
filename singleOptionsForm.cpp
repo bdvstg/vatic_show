@@ -57,6 +57,19 @@ void singleOptionsForm::setSelected(int i)
         mOptions[i]->setChecked(true);
 }
 
+void singleOptionsForm::setSelected(const std::string & option)
+{
+    QString qOption = option.c_str();
+    for (int i = 0; i < mOptions.size(); i++)
+    {
+        if (mOptions[i]->text() == qOption)
+        {
+            mOptions[i]->setChecked(true);
+            break;
+        }
+    }
+}
+
 int singleOptionsForm::getSelected() const
 {
     int selected = -1; // no any is checked

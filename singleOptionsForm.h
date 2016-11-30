@@ -22,6 +22,7 @@ public:
 
     void setOptions(const std::vector<std::string> options);
     void setSelected(int i);
+    void setSelected(const std::string & option);
     void setCallbackSelectedChange(std::function<void(int)> f);
     int getSelected() const;
 
