@@ -325,6 +325,7 @@ int main(int argc, char **argv)
         [&data](int selected) -> void
         {
             data.curObj = selected;
+            data.classes->setSelected(data.objs[selected].name);
             render(data);
         });
     boxsForm->show();
