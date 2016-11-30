@@ -8,6 +8,7 @@ singleOptionsForm::singleOptionsForm(QWidget *parent, Qt::WindowFlags flags)
     mScrollArea->setHidden(false);
     mScrollArea->setWidget(this);
     mScrollArea->setWidgetResizable(true);
+    mScrollArea->resize(300, 500);
     this->layout()->setSpacing(10);
 }
 
