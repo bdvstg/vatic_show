@@ -30,6 +30,9 @@ using uiDatas = struct {
 
         foldSetting folds;
         fileManage files;
+
+        singleOptionsForm *bndBox;
+        singleOptionsForm *classes;
     };
 
 void initUiDatas(uiDatas &data)
@@ -39,6 +42,8 @@ void initUiDatas(uiDatas &data)
     data.drawCurObjSide = false;
     data.curObjSide = RECT_NONE;
     data.curFrame = 0;
+    data.bndBox = nullptr;
+    data.classes = nullptr;
 }
 
 cv::Rect toRect(const vatic_object &obj)
@@ -326,9 +331,15 @@ int main(int argc, char **argv)
         qApplication.reset(new Application(argc, argv));
     }
 
-    QScopedPointer<singleOptionsForm> boxsForm;
+    QScopedPointer<singleOptionsForm> boxsForm, classes;
     boxsForm.reset(new singleOptionsForm("Bounding Boxes"));
+    classes.reset(new singleOptionsForm("Classes"));
+    data.bndBox = boxsForm.data();
+    data.classes = classes.data();
     boxsForm->show();
+    classes->show();
+
+    classes->setOptions({ "motorbike", "car", "bike", "person", "bus", });
 
     updateData(files, curFrame, objs, img);
     boxsForm->setOptions(prefixNumber(xml_vatic_get_names(objs)));
