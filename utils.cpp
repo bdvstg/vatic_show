@@ -287,3 +287,19 @@ int findNearest(const std::vector<cv::Point> &points,
         });
     return idxDatas[0].index;
 }
+
+int find(const std::vector<std::string> & list, std::string & target)
+{
+    int matchIndex = -1; // no found
+    const auto match = // find target in list, get it iterator
+        std::find_if(list.begin(), list.end(),
+            [target](const std::string &str)
+            {
+                return (str.compare(target) == 0);
+            });
+    if (match >= list.begin() && match < list.end())
+    {
+        matchIndex = match - list.begin();
+    }
+    return matchIndex;
+}

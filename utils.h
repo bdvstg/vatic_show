@@ -20,6 +20,8 @@
 #define KEY_DEL_BOX    CV_KEY_Dash
 #define KEY_ADD_BOX    CV_KEY_Plus
 #define KEY_HELP       CV_KEY_F1
+#define KEY_PREV_CLASS CV_KEY_OpenBracket
+#define KEY_NEXT_CLASS CV_KEY_ClosedBracket
 typedef enum
 {
     RECT_NONE = -1,
@@ -89,5 +91,6 @@ void adjObj(vatic_object &obj, const RECT_DIR dir,
     const cv::Point &shift, const cv::Size &imageSize,
     adjObj_Method method = adjObj_Absolute);
 
+int find(const std::vector<std::string> & list, std::string & target);
 #endif
 

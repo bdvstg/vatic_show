@@ -90,6 +90,8 @@
 #define CV_KEY_F12 (0x7b0000)
 #define CV_KEY_Plus (0x2b)
 #define CV_KEY_Dash (0x2d)
+#define CV_KEY_OpenBracket (0x5b)
+#define CV_KEY_ClosedBracket (0x5d)
 
 #endif
 
