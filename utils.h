@@ -57,6 +57,13 @@ std::vector<std::string> prefixNumber(
 int jumpIndex(int cur, int jump, int max, int min, bool cycling);
 
 cv::Rect toRect(const vatic_object &obj);
+std::vector<cv::Rect> toRect(const std::vector<vatic_object> &objs);
+cv::Point toCenter(const cv::Rect &rect);
+std::vector<cv::Point> toCenter(const std::vector<cv::Rect> &rects);
+bool isContain(const std::vector<cv::Rect> &rects,
+    const cv::Point &p);
+int findNearest(const std::vector<cv::Point> &points,
+    const cv::Point &p);
 
 typedef enum {
     adjObj_Absolute = 0,

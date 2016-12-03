@@ -145,6 +145,19 @@ cv::Rect toRect(const vatic_object &obj)
     return cv::Rect(tl, br);
 }
 
+std::vector<cv::Rect> toRect(const std::vector<vatic_object> &objs)
+{
+    std::vector<cv::Rect> rects(objs.size());
+    for (int i = 0; i < objs.size(); i++)
+    {
+        const auto & obj = objs[i];
+        const cv::Point tl(obj.xmin, obj.ymin);
+        const cv::Point br(obj.xmax, obj.ymax);
+        rects[i] = cv::Rect(tl, br);
+    }
+    return rects;
+}
+
 void adjObj(vatic_object &obj, const RECT_DIR dir,
     const cv::Point &shift, const cv::Size &imageSize,
     adjObj_Method method)
@@ -215,4 +228,52 @@ void adjObj(vatic_object &obj, const RECT_DIR dir,
     obj.ymin = intersec.tl().y;
     obj.xmax = intersec.br().x;
     obj.ymax = intersec.br().y;
+}
+
+cv::Point toCenter(const cv::Rect &rect)
+{
+    return {rect.x + (rect.width / 2), rect.y + (rect.height / 2)};
+}
+std::vector<cv::Point> toCenter(const std::vector<cv::Rect> &rects)
+{
+    std::vector<cv::Point> centers(rects.size());
+    for (int i = 0; i < rects.size(); i++)
+    {
+        centers[i] = toCenter(rects[i]);
+    }
+    return centers;
+}
+bool isContain(const std::vector<cv::Rect> &rects,
+    const cv::Point &p)
+{
+
+}
+
+using idxData = struct
+{
+    int index;
+    const cv::Point *data;
+};
+
+int findNearest(const std::vector<cv::Point> &points,
+    const cv::Point &p)
+{
+    std::vector<idxData> idxDatas(points.size());
+    for (int i = 0; i < points.size(); i++)
+    {
+        idxDatas[i].index = i;
+        idxDatas[i].data = &points[i];
+    }
+
+#define DIST(A,B) sqrt(((A).x-(B).x)*((A).x-(B).x) +\
+    ((A).y-(B).y)*((A).y-(B).y))
+
+    std::sort(idxDatas.begin(), idxDatas.end(),
+        [p](const idxData & a, const idxData & b)
+        {
+            float da = DIST(p, *(a.data));
+            float db = DIST(p, *(b.data));
+            return da < db;
+        });
+    return idxDatas[0].index;
 }
