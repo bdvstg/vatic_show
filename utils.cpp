@@ -118,7 +118,8 @@ std::vector<std::string> prefixNumber(
 
 int jumpIndex(int cur, int jump, int max, int min, bool cycling)
 {
-    if (max <= min) throw "unexpected behavior!";
+    if (max < min) throw "unexpected behavior!";
+    if (max == min) return -1;
     jump %= (max - min);
     cur += jump;
 

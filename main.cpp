@@ -37,7 +37,7 @@ using uiDatas = struct {
 
 void initUiDatas(uiDatas &data)
 {
-    data.curObj = 0;
+    data.curObj = -1;
     data.drawCurObj = false;
     data.drawCurObjSide = false;
     data.curObjSide = RECT_NONE;
@@ -51,11 +51,11 @@ void render(const uiDatas &data, int x = -65535, int y = -65535)
     cv::Mat draw = data.img.clone();
 
     // draw all bndBox
-    cv::Rect bndbox = toRect(data.objs[data.curObj]);
     draw_vaticObjs(draw, data.objs);
 
-    if (data.drawCurObj)
+    if (data.drawCurObj && data.objs.size() > 0)
     {// draw current bndBox
+        const cv::Rect & bndbox = toRect(data.objs[data.curObj]);
         cv::rectangle(draw, bndbox, cv::Scalar(200, 0, 200), 3);
 
         if (data.drawCurObjSide)
@@ -320,8 +320,17 @@ int main(int argc, char **argv)
             render(data);
             break;
         case KEY_ADD_BOX:
+            objs.push_back(objs[curObj]);
+            curObj = objs.size() - 1;
+            updateUIs(data);
             break;
         case KEY_DEL_BOX:
+            if (objs.size() > 0)
+            {
+                objs.erase(objs.begin() + curObj);
+                data.curObj = jumpIndex(data.curObj, 0, data.objs.size(), 0, true);
+                updateUIs(data);
+            }
             break;
         case KEY_HELP:
             showHelp();
