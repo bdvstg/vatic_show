@@ -14,6 +14,7 @@ singleOptionsForm::singleOptionsForm(const char* title, const char* backgroundCo
     if (title != nullptr)
         mScrollArea->setWindowTitle(title);
     this->layout()->setSpacing(10);
+    this->layout()->setAlignment(Qt::AlignTop);
 }
 
 void singleOptionsForm::clearOptions()
