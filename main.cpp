@@ -31,8 +31,8 @@ using uiDatas = struct {
         foldSetting folds;
         fileManage files;
 
-        singleOptionsForm *bndBox;
-        singleOptionsForm *classes;
+        singleOptionsForm *formBndBox;
+        singleOptionsForm *formClasses;
     };
 
 void initUiDatas(uiDatas &data)
@@ -42,8 +42,8 @@ void initUiDatas(uiDatas &data)
     data.drawCurObjSide = false;
     data.curObjSide = RECT_NONE;
     data.curFrame = 0;
-    data.bndBox = nullptr;
-    data.classes = nullptr;
+    data.formBndBox = nullptr;
+    data.formClasses = nullptr;
 }
 
 void render(const uiDatas &data, int x = -65535, int y = -65535)
@@ -136,8 +136,8 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
 
 void updateUIs(uiDatas &data)
 {
-    data.bndBox->setOptions(prefixNumber(xml_vatic_get_names(data.objs)));
-    data.bndBox->setSelected(data.curObj);
+    data.formBndBox->setOptions(prefixNumber(xml_vatic_get_names(data.objs)));
+    data.formBndBox->setSelected(data.curObj);
     render(data);
 }
 
@@ -251,11 +251,11 @@ int main(int argc, char **argv)
         [&data](int selected) -> void
         {
             data.curObj = selected;
-            data.classes->setSelected(data.objs[selected].name);
+            data.formClasses->setSelected(data.objs[selected].name);
             render(data);
         });
     boxsForm->show();
-    data.bndBox = boxsForm.data();
+    data.formBndBox = boxsForm.data();
 
     classesForm.reset(new singleOptionsForm("Classes"));
     const std::vector<std::string> classes = {
@@ -269,7 +269,7 @@ int main(int argc, char **argv)
             updateUIs(data);
         });
     classesForm->show();
-    data.classes = classesForm.data();
+    data.formClasses = classesForm.data();
 
     updateData(files, curFrame, data);
     updateUIs(data);
