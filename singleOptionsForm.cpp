@@ -4,6 +4,8 @@ singleOptionsForm::singleOptionsForm(
     const char* title,
     const char* backgroundColor,
     int fontSize,
+    int windowWidth,
+    int windowHeight,
     QWidget *parent,
     Qt::WindowFlags flags)
 {
@@ -12,7 +14,12 @@ singleOptionsForm::singleOptionsForm(
     mScrollArea->setHidden(false);
     mScrollArea->setWidget(this);
     mScrollArea->setWidgetResizable(true);
-    mScrollArea->resize(300, 500);
+
+    if (windowWidth == -1)
+        windowWidth = 300;
+    if (windowHeight == -1)
+        windowHeight = 500;
+    mScrollArea->resize(windowWidth,windowHeight);
     mScrollArea->setAutoFillBackground(true);
     if (backgroundColor != nullptr)
         mScrollArea->setStyleSheet(QString("background-color: ") + backgroundColor);

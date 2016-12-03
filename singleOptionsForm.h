@@ -20,6 +20,8 @@ public:
         const char* title = nullptr,
         const char* backgroundColor = nullptr,
         int fontSize = 30,
+        int windowWidth = -1,
+        int windowHeight = -1,
         QWidget *parent = 0, Qt::WindowFlags flags = 0);
     ~singleOptionsForm() = default;
 
