@@ -17,7 +17,7 @@ class singleOptionsForm : public QWidget
     Q_OBJECT
 
 public:
-    singleOptionsForm(const char* title = nullptr, QWidget *parent = 0, Qt::WindowFlags flags = 0);
+    singleOptionsForm(const char* title = nullptr, const char* backgroundColor = nullptr, QWidget *parent = 0, Qt::WindowFlags flags = 0);
     ~singleOptionsForm() = default;
 
     void setOptions(const std::vector<std::string> options);

@@ -1,6 +1,6 @@
 #include "singleOptionsForm.h"
 
-singleOptionsForm::singleOptionsForm(const char* title, QWidget *parent, Qt::WindowFlags flags)
+singleOptionsForm::singleOptionsForm(const char* title, const char* backgroundColor, QWidget *parent, Qt::WindowFlags flags)
 {
     ui.setupUi(this);
     mScrollArea.reset(new QScrollArea());
@@ -8,6 +8,8 @@ singleOptionsForm::singleOptionsForm(const char* title, QWidget *parent, Qt::Win
     mScrollArea->setWidget(this);
     mScrollArea->setWidgetResizable(true);
     mScrollArea->resize(300, 500);
+    if (backgroundColor != nullptr)
+        mScrollArea->setStyleSheet(QString("background-color: ") + backgroundColor);
     if (title != nullptr)
         mScrollArea->setWindowTitle(title);
     this->layout()->setSpacing(10);
