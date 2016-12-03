@@ -212,6 +212,8 @@ std::map<int, int> jumpInt = {
     { KEY_NEXT_FRAME, 1 },
     { KEY_PRVE_OBJ, 1 },
     { KEY_NEXT_OBJ, -1 },
+    { KEY_PREV_CLASS, -1},
+    { KEY_NEXT_CLASS, 1 },
 };
 
 std::map<int, cv::Point> shiftPoint = {
@@ -325,6 +327,25 @@ int main(int argc, char **argv)
             curObj = jumpIndex(curObj, jumpInt[key], objs.size(), 0, true);
             onMouse(-65535,-65535,-65535,0,&data);
             boxsForm->setSelected(curObj);
+            break;
+        case KEY_PREV_CLASS:
+        case KEY_NEXT_CLASS:
+            try
+            {
+                data.objs[data.curObj].name = classes[
+                    jumpIndex(
+                        find(classes, data.objs[data.curObj].name),
+                        jumpInt[key],
+                        classes.size(), 0, true)
+                ];
+            }
+            catch (const char * exMessage)
+            {
+                printf("%s\n", exMessage);
+                showMessageBox(L"錯誤",
+                    L"請確認類別清單與開啟xml檔的bounding box類別名稱一致！");
+            }
+            updateUIs(data);
             break;
         case KEY_ADJ_UP:    // shiftPoint[KEY_ADJ_UP] = cv::Point(0, -1)
         case KEY_ADJ_DOWN:  // shiftPoint[KEY_ADJ_DOWN] = cv::Point(0, 1)
