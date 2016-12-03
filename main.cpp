@@ -257,7 +257,7 @@ int main(int argc, char **argv)
     boxsForm->show();
     data.formBndBox = boxsForm.data();
 
-    classesForm.reset(new singleOptionsForm("Classes","#C6ADAD"));
+    classesForm.reset(new singleOptionsForm("Classes","#C6ADAD",25));
     const std::vector<std::string> classes = {
         "motorbike", "car", "bike", "person", "bus",
     };

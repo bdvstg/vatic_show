@@ -1,6 +1,11 @@
 #include "singleOptionsForm.h"
 
-singleOptionsForm::singleOptionsForm(const char* title, const char* backgroundColor, QWidget *parent, Qt::WindowFlags flags)
+singleOptionsForm::singleOptionsForm(
+    const char* title,
+    const char* backgroundColor,
+    int fontSize,
+    QWidget *parent,
+    Qt::WindowFlags flags)
 {
     ui.setupUi(this);
     mScrollArea.reset(new QScrollArea());
@@ -15,6 +20,7 @@ singleOptionsForm::singleOptionsForm(const char* title, const char* backgroundCo
         mScrollArea->setWindowTitle(title);
     this->layout()->setSpacing(10);
     this->layout()->setAlignment(Qt::AlignTop);
+    mFontSize = fontSize;
 }
 
 void singleOptionsForm::clearOptions()
@@ -42,11 +48,16 @@ void singleOptionsForm::setOptions(const std::vector<std::string> options)
     auto bgColor = mScrollArea->palette().color(QPalette::Background);
     auto optsBgColor = bgColor.darker(110).name(QColor::HexRgb);
     auto optsFgColor = bgColor.darker(300).name(QColor::HexRgb);
-    auto optsStyleSheet =
-        QString("QRadioButton { font-size: 30px; ") +
+    auto optsStyleSheet = QString() +
+        "QRadioButton { " +
+        "font-size: " + QString::number(mFontSize) + "px; " +
         "background-color: " + optsBgColor + ";" +
         "foreground-color: " + optsFgColor + ";" +
-        "} QRadioButton::indicator { width: 50px; height: 50px; }";
+        "}" +
+        "QRadioButton::indicator { " +
+        "width: " + QString::number(mFontSize) + "px; " +
+        "height: " + QString::number(mFontSize*5/3) + "px; " +
+        "}";
 
     mOptions.resize(options.size());
     for (int i = 0; i < mOptions.size(); i++)
