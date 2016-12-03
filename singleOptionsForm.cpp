@@ -54,12 +54,12 @@ void singleOptionsForm::setOptions(const std::vector<std::string> options)
     // prepare style sheet of options
     auto bgColor = mScrollArea->palette().color(QPalette::Background);
     auto optsBgColor = bgColor.darker(110).name(QColor::HexRgb);
-    auto optsFgColor = bgColor.darker(300).name(QColor::HexRgb);
+    auto optsFgColor = bgColor.darker(800).name(QColor::HexRgb);
     auto optsStyleSheet = QString() +
         "QRadioButton { " +
         "font-size: " + QString::number(mFontSize) + "px; " +
         "background-color: " + optsBgColor + ";" +
-        "foreground-color: " + optsFgColor + ";" +
+        "color: " + optsFgColor + ";" +
         "}" +
         "QRadioButton::indicator { " +
         "width: " + QString::number(mFontSize) + "px; " +
