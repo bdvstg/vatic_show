@@ -8,7 +8,6 @@
 #include <QRadioButton>
 #include <QScopedPointer>
 #include <QScrollArea>
-//#include <QLayout>
 #include <QWidget>
 #include "ui_emptyForm.h"
 
