@@ -319,6 +319,10 @@ int main(int argc, char **argv)
             data.files.move2normal(curFrame);
             render(data);
             break;
+        case KEY_ADD_BOX:
+            break;
+        case KEY_DEL_BOX:
+            break;
         case KEY_HELP:
             showHelp();
             break;

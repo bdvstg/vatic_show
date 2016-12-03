@@ -17,6 +17,8 @@
 #define KEY_SAVE       CV_KEY_CtrlS
 #define KEY_DEL_FRAME  CV_KEY_Delete
 #define KEY_INS_FRAME  CV_KEY_Insert
+#define KEY_DEL_BOX    CV_KEY_Dash
+#define KEY_ADD_BOX    CV_KEY_Plus
 #define KEY_HELP       CV_KEY_F1
 typedef enum
 {

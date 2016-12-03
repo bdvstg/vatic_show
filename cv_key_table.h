@@ -88,6 +88,8 @@
 #define CV_KEY_F10 (0x790000)
 #define CV_KEY_F11 (0x7a0000)
 #define CV_KEY_F12 (0x7b0000)
+#define CV_KEY_Plus (0x2b)
+#define CV_KEY_Dash (0x2d)
 
 #endif
 
