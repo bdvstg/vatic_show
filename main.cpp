@@ -330,7 +330,12 @@ int main(int argc, char **argv)
             break;
         case KEY_PREV_CLASS:
         case KEY_NEXT_CLASS:
-            try
+            if (find(classes, data.objs[data.curObj].name) == -1)
+            {
+                showMessageBox(L"錯誤",
+                    L"請確認類別清單與開啟xml檔的bounding box類別名稱一致！");
+            }
+            else
             {
                 data.objs[data.curObj].name = classes[
                     jumpIndex(
@@ -338,14 +343,8 @@ int main(int argc, char **argv)
                         jumpInt[key],
                         classes.size(), 0, true)
                 ];
+                updateUIs(data);
             }
-            catch (const char * exMessage)
-            {
-                printf("%s\n", exMessage);
-                showMessageBox(L"錯誤",
-                    L"請確認類別清單與開啟xml檔的bounding box類別名稱一致！");
-            }
-            updateUIs(data);
             break;
         case KEY_ADJ_UP:    // shiftPoint[KEY_ADJ_UP] = cv::Point(0, -1)
         case KEY_ADJ_DOWN:  // shiftPoint[KEY_ADJ_DOWN] = cv::Point(0, 1)
