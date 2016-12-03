@@ -24,8 +24,6 @@ using uiDatas = struct {
         int curObj; // which bndBox in gObjs
         RECT_DIR curObjSide;
         cv::Mat img; // current image
-        std::atomic<bool> drawCurObj;
-        std::atomic<bool> drawCurObjSide;
         int curFrame;
 
         foldSetting folds;
@@ -38,8 +36,6 @@ using uiDatas = struct {
 void initUiDatas(uiDatas &data)
 {
     data.curObj = -1;
-    data.drawCurObj = false;
-    data.drawCurObjSide = false;
     data.curObjSide = RECT_NONE;
     data.curFrame = 0;
     data.formBndBox = nullptr;
@@ -53,19 +49,17 @@ void render(const uiDatas &data, int x = -65535, int y = -65535)
     // draw all bndBox
     draw_vaticObjs(draw, data.objs);
 
-    if (data.drawCurObj && data.objs.size() > 0)
+    if (data.objs.size() > 0)
     {// draw current bndBox
         const cv::Rect & bndbox = toRect(data.objs[data.curObj]);
         cv::rectangle(draw, bndbox, cv::Scalar(200, 0, 200), 3);
 
-        if (data.drawCurObjSide)
-        {// draw current bndBox's selected side
-            Lint_t line = rectLine(bndbox, data.curObjSide);
-            if (data.curObjSide == RECT_CENTER)
-                cv::circle(draw, line.p1, 5, cv::Scalar(255, 255, 0), -1);
-            else
-                cv::line(draw, line.p1, line.p2, cv::Scalar(255, 255, 0), 3);
-        }
+        // draw current bndBox's selected side
+        Lint_t line = rectLine(bndbox, data.curObjSide);
+        if (data.curObjSide == RECT_CENTER)
+            cv::circle(draw, line.p1, 5, cv::Scalar(255, 255, 0), -1);
+        else if (data.curObjSide != RECT_NONE)
+            cv::line(draw, line.p1, line.p2, cv::Scalar(255, 255, 0), 3);
     }
 
     // draw filename
@@ -104,15 +98,12 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
     uiDatas &data = *pData;
     if (data.curObj >= 0 && data.curObj < data.objs.size())
     {// curObj is valid
-        data.drawCurObj = true;
         vatic_object &targetObj = data.objs[data.curObj];
         const cv::Rect bndbox = toRect(targetObj);
 
         cv::Point mousePos = cv::Point(x, y);
         if (mouseRoi(bndbox).contains(mousePos))
         {// mouse in ROI of bndbox, should be handle
-            data.drawCurObjSide = true;
-
             const RECT_DIR dir = rectDir(bndbox, mousePos);
 
             if (mouseLeftBtnDown &&
