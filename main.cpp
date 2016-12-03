@@ -90,6 +90,26 @@ void render(const uiDatas &data, int x = -65535, int y = -65535)
     cv::imshow("img", draw);
 }
 
+void updateUIs(uiDatas &data)
+{
+    data.formBndBox->setOptions(prefixNumber(xml_vatic_get_names(data.objs)));
+    data.formBndBox->setSelected(data.curObj);
+    render(data);
+}
+
+void updateData(const fileManage &fmg, int idx, uiDatas &data)
+{
+    // update objects
+    data.objs = xml_vatic_pascal_parse(fmg.getXmlName(idx));
+
+    // update image
+    std::vector<char> imgBuf = ReadFile(fmg.getImageName(idx).c_str());
+    data.img = cv::imdecode(imgBuf, 1);
+
+    // ensure curObj not out of index
+    data.curObj = jumpIndex(data.curObj, 0, data.objs.size(), 0, true);
+}
+
 std::atomic<bool> mouseLeftBtnDown = false;
 void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, void* param = 0)
 {
@@ -98,6 +118,8 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
     else if (event == CV_EVENT_LBUTTONUP)
         mouseLeftBtnDown = false;
     else if (event == CV_EVENT_MOUSEMOVE);
+    else if (event == CV_EVENT_RBUTTONDOWN);
+    else if (event == CV_EVENT_RBUTTONUP);
     else if (event == -65535);
     else
         printf("onMouse: %d\n", event);
@@ -136,30 +158,15 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
     {
         const auto centers = toCenter(rects);
         data.candidateObj = findNearest(centers, mousePos);
+        if (event == CV_EVENT_RBUTTONUP)
+        {
+            data.curObj = data.candidateObj;
+            updateUIs(data);
+        }
     }
     else data.candidateObj = -1;
 
     render(data, x, y);
-}
-
-void updateUIs(uiDatas &data)
-{
-    data.formBndBox->setOptions(prefixNumber(xml_vatic_get_names(data.objs)));
-    data.formBndBox->setSelected(data.curObj);
-    render(data);
-}
-
-void updateData(const fileManage &fmg, int idx, uiDatas &data)
-{
-    // update objects
-    data.objs = xml_vatic_pascal_parse(fmg.getXmlName(idx));
-
-    // update image
-    std::vector<char> imgBuf = ReadFile(fmg.getImageName(idx).c_str());
-    data.img = cv::imdecode(imgBuf, 1);
-
-    // ensure curObj not out of index
-    data.curObj = jumpIndex(data.curObj, 0, data.objs.size(), 0, true);
 }
 
 void showHelp()
@@ -199,6 +206,7 @@ std::map<int, int> jumpInt = {
     { KEY_PRVE_OBJ, 1 },
     { KEY_NEXT_OBJ, -1 },
 };
+
 std::map<int, cv::Point> shiftPoint = {
     { KEY_ADJ_UP, cv::Point(0, -1) },
     { KEY_ADJ_DOWN, cv::Point(0, 1) },
