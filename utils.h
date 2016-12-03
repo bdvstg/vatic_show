@@ -54,14 +54,30 @@ std::string prefixNumber(int num, const std::string &str);
 std::vector<std::string> prefixNumber(
     const std::vector<std::string> &str);
 
+// give current index cur,
+// jump index this time,
+// max/min of index,
+// how to do when out of index, cycling or fix to bounding?
+// return new index after
 int jumpIndex(int cur, int jump, int max, int min, bool cycling);
 
+// convert a vatic_object to cv::Rect
 cv::Rect toRect(const vatic_object &obj);
+
+// convert many vatic_object to cv::Rect rects
 std::vector<cv::Rect> toRect(const std::vector<vatic_object> &objs);
+
+// calculate center point of cv::Rect rect
 cv::Point toCenter(const cv::Rect &rect);
+
+// convert all cv::Rect rects to it center cv::Point centers
 std::vector<cv::Point> toCenter(const std::vector<cv::Rect> &rects);
+
+// is any cv::Rect in rects contain cv::Point p
 bool isContain(const std::vector<cv::Rect> &rects,
     const cv::Point &p);
+
+// find which cv::Point in points is closest to cv::Point p, return it index
 int findNearest(const std::vector<cv::Point> &points,
     const cv::Point &p);
 
