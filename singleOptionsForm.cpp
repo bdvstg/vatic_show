@@ -8,6 +8,7 @@ singleOptionsForm::singleOptionsForm(const char* title, const char* backgroundCo
     mScrollArea->setWidget(this);
     mScrollArea->setWidgetResizable(true);
     mScrollArea->resize(300, 500);
+    mScrollArea->setAutoFillBackground(true);
     if (backgroundColor != nullptr)
         mScrollArea->setStyleSheet(QString("background-color: ") + backgroundColor);
     if (title != nullptr)
@@ -36,14 +37,24 @@ void singleOptionsForm::setOptions(const std::vector<std::string> options)
         clearOptions();
     }
 
+    // prepare style sheet of options
+    auto bgColor = mScrollArea->palette().color(QPalette::Background);
+    auto optsBgColor = bgColor.darker(110).name(QColor::HexRgb);
+    auto optsFgColor = bgColor.darker(300).name(QColor::HexRgb);
+    auto optsStyleSheet =
+        QString("QRadioButton { font-size: 30px; ") +
+        "background-color: " + optsBgColor + ";" +
+        "foreground-color: " + optsFgColor + ";" +
+        "} QRadioButton::indicator { width: 50px; height: 50px; }";
+
     mOptions.resize(options.size());
     for (int i = 0; i < mOptions.size(); i++)
     {
         mOptions[i] = new QRadioButton();
-        mOptions[i]->setStyleSheet("::indicator { height: 50px; }");
-        mOptions[i]->setStyleSheet("font-size: 30px;");
+        mOptions[i]->setStyleSheet(optsStyleSheet);
         mOptions[i]->setText(options[i].c_str());
-        connect(mOptions[i], SIGNAL(toggled(bool)), this, SLOT(radioButtons_toggled(bool)));
+        connect(mOptions[i], SIGNAL(toggled(bool)),
+            this, SLOT(radioButtons_toggled(bool)));
         this->layout()->addWidget(mOptions[i]);
     }
 }
