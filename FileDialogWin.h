@@ -8,7 +8,7 @@ using filenames_t = std::vector<std::wstring>;
 
 std::string w2mb(const wchar_t* w);
 
-// show a folder chooser dialog 
+// show a folder chooser dialog
 wchar_t* OpenFolderDialog();
 
 // list files in directory

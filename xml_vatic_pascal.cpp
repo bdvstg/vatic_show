@@ -111,7 +111,7 @@ static vatic_object toObj(const xmlNodePtr & obj)
 
 std::vector<vatic_object> xml_vatic_pascal_parse(std::wstring filename)
 {
-    std::vector<vatic_object> result;   
+    std::vector<vatic_object> result;
 
     xmlDocPtr doc = getdoc(filename.c_str());
     xmlChar *xpath = (xmlChar*) "//annotation/object";
@@ -167,7 +167,7 @@ void xml_vatic_pascal_modifyObjects(std::wstring filename,
         {
             const xmlNodePtr &obj = nodeset->nodeTab[i];
             xmlUnlinkNode(obj);
-            xmlFreeNode(obj);           
+            xmlFreeNode(obj);
         }
         xmlXPathFreeObject(objects);
     }
@@ -184,11 +184,11 @@ void xml_vatic_pascal_modifyObjects(std::wstring filename,
         }
         xmlXPathFreeObject(objects);
     }
-    
+
     putdoc(filename.c_str(), doc);
 
     xmlFreeDoc(doc);
-    xmlCleanupParser(); 
+    xmlCleanupParser();
 }
 
 std::vector<std::string> xml_vatic_get_names(
@@ -196,8 +196,8 @@ std::vector<std::string> xml_vatic_get_names(
 {
     std::vector<std::string> names(objs.size());
     for (size_t i = 0; i < objs.size(); i++)
-    {        
-        names[i] = objs[i].name;        
+    {
+        names[i] = objs[i].name;
     }
     return names;
 }

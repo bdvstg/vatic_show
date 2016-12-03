@@ -124,7 +124,7 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
                     adjObj_Absolute);
             }
 
-            // update 
+            // update
             data.curObjSide = dir;
         }
         else
@@ -304,7 +304,7 @@ int main(int argc, char **argv)
             boxsForm->setSelected(curObj);
             break;
         case KEY_ADJ_UP:    // shiftPoint[KEY_ADJ_UP] = cv::Point(0, -1)
-        case KEY_ADJ_DOWN:  // shiftPoint[KEY_ADJ_DOWN] = cv::Point(0, 1) 
+        case KEY_ADJ_DOWN:  // shiftPoint[KEY_ADJ_DOWN] = cv::Point(0, 1)
         case KEY_ADJ_LEFT:  // shiftPoint[KEY_ADJ_LEFT] = cv::Point(-1, 0)
         case KEY_ADJ_RIGHT: // shiftPoint[KEY_ADJ_RIGHT] = cv::Point(1, 0)
             adjObj(objs[curObj], curObjSide, shiftPoint[key], img.size(),

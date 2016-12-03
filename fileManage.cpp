@@ -52,7 +52,7 @@ static fileManage::frames_t toFrames(
 fileManage::fileManage(foldSetting f)
     : fold(f)
 {
-        
+
 }
 
 void fileManage::init()

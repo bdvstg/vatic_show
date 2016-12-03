@@ -2,5 +2,5 @@
 
 emptyForm::emptyForm(QWidget *parent, Qt::WindowFlags flags)
 {
-    ui.setupUi(this); 
+    ui.setupUi(this);
 }

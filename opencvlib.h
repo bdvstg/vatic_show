@@ -2,7 +2,7 @@
 #define _OPENCVLIB_
 // 1. you should set the path of openCV's include path in project setup option
 //    that you can include the header file below
-// in this case I set 
+// in this case I set
 #include <cv.h>
 #include <highgui.h>
 #include <cxcore.h>
@@ -35,7 +35,7 @@
 #undef USE_LIB
 #undef USE_LIBV
 
-// Common Problem 
+// Common Problem
 // Q1. fatal error C1083: 無法開啟包含檔案: 'cv.h': No such file or directory
 // A1. you don't set opencv's include path correctly
 

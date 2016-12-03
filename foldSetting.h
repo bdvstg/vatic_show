@@ -14,7 +14,7 @@ public:
         std::wstring deleteAnnotationsName,
         std::wstring deleteJpegImagesName);
 
-    
+
     std::wstring base() const;
     std::wstring annotations() const;
     std::wstring jpegImages() const;

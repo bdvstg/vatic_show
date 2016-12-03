@@ -75,7 +75,7 @@ Lint_t rectLine(const cv::Rect &roi, const RECT_DIR dir)
         p2 = roi.br();
         p1.x = p2.x;
         p1.y = p2.y - roi.height;
-    }    
+    }
 
     return { p1,p2 };
 }

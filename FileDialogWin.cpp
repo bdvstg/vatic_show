@@ -2,7 +2,7 @@
 #include <string>
 #include <mbstring.h>
 #include <windows.h>
-#include <shobjidl.h> 
+#include <shobjidl.h>
 #include <strsafe.h>
 
 #include "FileDialogWin.h"
@@ -123,7 +123,7 @@ filenames_t listFiles(const wchar_t * dir_name)
 
 filenames_t getFileList()
 {
-    wchar_t* folder = OpenFolderDialog();    
+    wchar_t* folder = OpenFolderDialog();
     auto list = listFiles(folder);
     return list;
 }
