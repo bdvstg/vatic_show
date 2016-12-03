@@ -22,6 +22,7 @@ const std::wstring foldNameImg = L"JPEGImages";
 using uiDatas = struct {
         std::vector<vatic_object> objs; // current images's all bndBoxs
         int curObj; // which bndBox in gObjs
+        int candidateObj;
         RECT_DIR curObjSide;
         cv::Mat img; // current image
         int curFrame;
@@ -36,6 +37,7 @@ using uiDatas = struct {
 void initUiDatas(uiDatas &data)
 {
     data.curObj = -1;
+    data.candidateObj = -1;
     data.curObjSide = RECT_NONE;
     data.curFrame = 0;
     data.formBndBox = nullptr;
@@ -60,6 +62,12 @@ void render(const uiDatas &data, int x = -65535, int y = -65535)
             cv::circle(draw, line.p1, 5, cv::Scalar(255, 255, 0), -1);
         else if (data.curObjSide != RECT_NONE)
             cv::line(draw, line.p1, line.p2, cv::Scalar(255, 255, 0), 3);
+    }
+
+    if (data.candidateObj != -1)
+    {
+        const auto & candiBox = toRect(data.objs[data.candidateObj]);
+        cv::rectangle(draw, candiBox, cv::Scalar(200, 0, 200), 1);
     }
 
     // draw filename
@@ -94,6 +102,8 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
     else
         printf("onMouse: %d\n", event);
 
+    const cv::Point mousePos(x, y);
+
     uiDatas *pData = (uiDatas*)param;
     uiDatas &data = *pData;
     if (data.curObj >= 0 && data.curObj < data.objs.size())
@@ -101,7 +111,6 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
         vatic_object &targetObj = data.objs[data.curObj];
         const cv::Rect bndbox = toRect(targetObj);
 
-        cv::Point mousePos = cv::Point(x, y);
         if (mouseRoi(bndbox).contains(mousePos))
         {// mouse in ROI of bndbox, should be handle
             const RECT_DIR dir = rectDir(bndbox, mousePos);
@@ -121,6 +130,14 @@ void onMouse(int event = -65535, int x = -65535, int y = -65535, int flags = 0, 
         else
             data.curObjSide = RECT_NONE;
     }
+
+    const auto rects = toRect(data.objs);
+    if (isContain(rects, mousePos))
+    {
+        const auto centers = toCenter(rects);
+        data.candidateObj = findNearest(centers, mousePos);
+    }
+    else data.candidateObj = -1;
 
     render(data, x, y);
 }
