@@ -80,6 +80,17 @@ Lint_t rectLine(const cv::Rect &roi, const RECT_DIR dir)
     return { p1,p2 };
 }
 
+static cv::Rect get_text_rect(const std::string &text, const cv::Point &org, int fontFace, double fontScale, int thickness)
+{
+    int baseline = 0;
+    cv::Size textSize = cv::getTextSize(text, fontFace,
+        fontScale, thickness, &baseline);
+    auto rect = cv::Rect(
+        org + cv::Point(0, baseline + thickness),
+        org + cv::Point(textSize.width, -textSize.height));
+    return rect;
+}
+
 void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs)
 {
     for (auto obj : objs)
@@ -90,12 +101,29 @@ void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs)
         cv::rectangle(img, bndbox, cv::Scalar(0, 0, 200), 2);
     }
 
+    const int fontFace = 0;
+    const int thickness = 1;
+    const double fontScale = 0.6;
+    cv::Mat mask = img.clone();
     int i = 0;
     for (auto obj : objs)
     {
         const cv::Point tl(obj.xmin, obj.ymin - 10);
-        cv::putText(img, prefixNumber(i, obj.name), tl,
-            0, 0.8, cv::Scalar(0, 0, 200), 2);
+        auto text = prefixNumber(i, obj.name);
+        auto textRect = get_text_rect(text, tl, fontFace, fontScale, thickness);
+        cv::rectangle(mask, textRect + cv::Point(-5, -5) + cv::Size(12, 6), cv::Scalar(0, 0, 0), -1);
+        i++;
+    }
+    double alpha = 0.8;
+    cv::addWeighted(mask, alpha, img, 1.0 - alpha, 0, img);
+
+    i = 0;
+    for (auto obj : objs)
+    {
+        const cv::Point tl(obj.xmin, obj.ymin - 10);
+        auto text = prefixNumber(i, obj.name);
+        cv::putText(img, text, tl,
+            fontFace, fontScale, cv::Scalar(200, 200, 200), thickness);
         i++;
     }
 }
