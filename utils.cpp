@@ -246,7 +246,16 @@ std::vector<cv::Point> toCenter(const std::vector<cv::Rect> &rects)
 bool isContain(const std::vector<cv::Rect> &rects,
     const cv::Point &p)
 {
-
+    bool contain = false;
+    for each (auto rect in rects)
+    {
+        if (rect.contains(p))
+        {
+            contain = true;
+            break;
+        }
+    }
+    return contain;
 }
 
 using idxData = struct
