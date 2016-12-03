@@ -18,6 +18,17 @@ typedef struct vatic_object_
     int truncated;
 } vatic_object;
 
+vatic_object xml_vatic_new_object(
+    const char* name = nullptr,
+    int xmax = 50,
+    int xmin = 0,
+    int ymax = 50,
+    int ymin = 0,
+    int difficult = 0,
+    int occluded = 0,
+    const char* pose = "Unspecified",
+    int truncated = 0);
+
 std::vector<vatic_object> xml_vatic_pascal_parse(std::wstring filename);
 
 void xml_vatic_pascal_modifyObjects(std::wstring filename,

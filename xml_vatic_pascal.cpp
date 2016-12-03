@@ -201,3 +201,27 @@ std::vector<std::string> xml_vatic_get_names(
     }
     return names;
 }
+
+vatic_object xml_vatic_new_object(
+    const char* name,
+    int xmax,
+    int xmin,
+    int ymax,
+    int ymin,
+    int difficult,
+    int occluded,
+    const char* pose,
+    int truncated)
+{
+    vatic_object obj;
+    obj.name = ((name == nullptr) ? "" : name);
+    obj.xmax = xmax;
+    obj.ymax = ymax;
+    obj.xmin = xmin;
+    obj.ymin = ymin;
+    obj.difficult = difficult;
+    obj.occluded = occluded;
+    obj.pose = ((pose == nullptr) ? "" : pose);
+    obj.truncated = truncated;
+    return obj;
+}

@@ -320,7 +320,11 @@ int main(int argc, char **argv)
             render(data);
             break;
         case KEY_ADD_BOX:
-            objs.push_back(objs[curObj]);
+            if (objs.size() > 0)
+                objs.push_back(objs[curObj]);
+            else
+                objs.push_back(
+                    xml_vatic_new_object(classes[0].c_str(),150,50,150,50));
             curObj = objs.size() - 1;
             updateUIs(data);
             break;
