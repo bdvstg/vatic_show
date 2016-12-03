@@ -267,6 +267,7 @@ using idxData = struct
 int findNearest(const std::vector<cv::Point> &points,
     const cv::Point &p)
 {
+    if (points.empty()) return -1;
     std::vector<idxData> idxDatas(points.size());
     for (int i = 0; i < points.size(); i++)
     {
