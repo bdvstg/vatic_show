@@ -91,7 +91,7 @@ static cv::Rect get_text_rect(const std::string &text, const cv::Point &org, int
     return rect;
 }
 
-void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs)
+void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs, int curObj)
 {
     for (auto obj : objs)
     {
@@ -104,28 +104,39 @@ void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs)
     const int fontFace = 0;
     const int thickness = 1;
     const double fontScale = 0.6;
+    const auto bgColor = cv::Scalar(0, 0, 0);
+    double bgAlpha = 0.7;
+    const auto fontColor = cv::Scalar(200, 200, 200);
+    const auto bgColorFocus = cv::Scalar(28, 165, 37);//#47b8e0 // 0xe0, 0xb8, 0x47
+    const auto fontColorFocus = cv::Scalar(255,255,255); //#ff7473 //0x73, 0x74, 0xff
     cv::Mat mask = img.clone();
-    int i = 0;
-    for (auto obj : objs)
-    {
-        const cv::Point tl(obj.xmin, obj.ymin - 10);
-        auto text = prefixNumber(i, obj.name);
-        auto textRect = get_text_rect(text, tl, fontFace, fontScale, thickness);
-        cv::rectangle(mask, textRect + cv::Point(-5, -5) + cv::Size(12, 6), cv::Scalar(0, 0, 0), -1);
-        i++;
-    }
-    double alpha = 0.8;
-    cv::addWeighted(mask, alpha, img, 1.0 - alpha, 0, img);
 
-    i = 0;
-    for (auto obj : objs)
+    std::vector<std::string> texts(objs.size());
+    std::vector<cv::Point> orgs(objs.size());
+    std::vector<cv::Rect> textRects(objs.size());
+    for (auto i = 0; i < objs.size(); i++)
     {
-        const cv::Point tl(obj.xmin, obj.ymin - 10);
-        auto text = prefixNumber(i, obj.name);
-        cv::putText(img, text, tl,
-            fontFace, fontScale, cv::Scalar(200, 200, 200), thickness);
-        i++;
+        const auto &obj = objs[i];
+        texts[i] = prefixNumber(i, obj.name);
+        orgs[i] = cv::Point(obj.xmin, obj.ymin - 10);
+        textRects[i] =
+            get_text_rect(texts[i], orgs[i], fontFace, fontScale, thickness) +
+            cv::Point(-5, -5) +
+            cv::Size(12, 6);
+        cv::rectangle(mask, textRects[i], bgColor, -1);
     }
+
+    cv::addWeighted(mask, bgAlpha, img, 1.0 - bgAlpha, 0, img);
+
+    for (auto i = 0; i < objs.size(); i++)
+    {
+        cv::putText(img, texts[i], orgs[i],
+            fontFace, fontScale, fontColor, thickness);
+    }
+
+    cv::rectangle(img, textRects[curObj], bgColorFocus, -1);
+    cv::putText(img, texts[curObj], orgs[curObj],
+        fontFace, fontScale, fontColorFocus, thickness);
 }
 
 std::string prefixNumber(int num, const std::string &str)

@@ -49,7 +49,7 @@ RECT_DIR rectDir(const cv::Rect &roi, const cv::Point &p);
 Lint_t rectLine(const cv::Rect &roi, const RECT_DIR dir);
 
 // draw bndBox to img
-void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs);
+void draw_vaticObjs(cv::Mat &img, std::vector<vatic_object> objs, int curObj);
 
 // prefix a number to string
 std::string prefixNumber(int num, const std::string &str);
