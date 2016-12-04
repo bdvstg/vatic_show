@@ -49,7 +49,7 @@ void render(const uiDatas &data, int x = -65535, int y = -65535)
     cv::Mat draw = data.img.clone();
 
     // draw all bndBox
-    draw_vaticObjs(draw, data.objs);
+    draw_vaticObjs(draw, data.objs, data.curObj);
 
     if (data.objs.size() > 0)
     {// draw current bndBox
@@ -67,7 +67,7 @@ void render(const uiDatas &data, int x = -65535, int y = -65535)
     if (data.candidateObj != -1)
     {
         const auto & candiBox = toRect(data.objs[data.candidateObj]);
-        cv::rectangle(draw, candiBox, cv::Scalar(200, 0, 200), 1);
+        cv::rectangle(draw, candiBox, cv::Scalar(200, 200, 0), 1);
     }
 
     // draw filename
