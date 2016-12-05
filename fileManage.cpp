@@ -57,10 +57,10 @@ fileManage::fileManage(foldSetting f)
 
 void fileManage::init()
 {
-    auto xmls = listFiles(fold.fullAnnotations().c_str());
-    auto jpgs = listFiles(fold.fullJpegImages().c_str());
-    auto deletedXmls = listFiles(fold.fullDeleteAnnotations().c_str());
-    auto deletedJpgs = listFiles(fold.fullDeleteJpegImages().c_str());
+    auto xmls = listFiles(fold.fullAnnotations().c_str(), L"\\*.xml");
+    auto jpgs = listFiles(fold.fullJpegImages().c_str(), L"\\*.jpg");
+    auto deletedXmls = listFiles(fold.fullDeleteAnnotations().c_str(), L"\\*.xml");
+    auto deletedJpgs = listFiles(fold.fullDeleteJpegImages().c_str(), L"\\*.jpg");
 
     if (!isConsistent(xmls, jpgs))
         throw "filenames inside annotations and jpgimages is not same";

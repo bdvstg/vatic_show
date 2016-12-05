@@ -74,7 +74,8 @@ wchar_t* OpenFolderDialog()
 
 
 
-filenames_t listFiles(const wchar_t * dir_name)
+filenames_t listFiles(const wchar_t * dir_name,
+    const wchar_t * filter)
 {
     WIN32_FIND_DATAW ffd;
     LARGE_INTEGER filesize;
@@ -85,7 +86,7 @@ filenames_t listFiles(const wchar_t * dir_name)
 
 
     StringCchCopyW(szDir, MAX_PATH, dir_name);
-    StringCchCatW(szDir, MAX_PATH, L"\\*");
+    StringCchCatW(szDir, MAX_PATH, filter);
 
 
     // Find the first file in the directory.

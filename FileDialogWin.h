@@ -12,7 +12,8 @@ std::string w2mb(const wchar_t* w);
 wchar_t* OpenFolderDialog();
 
 // list files in directory
-filenames_t listFiles(const wchar_t * dir_name);
+filenames_t listFiles(const wchar_t * dir_name,
+    const wchar_t * filter = L"\\*");
 
 // show a folder chooser dialog and list files inside
 filenames_t getFileList();
