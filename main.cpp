@@ -15,6 +15,7 @@
 #include "ReadFile.h"
 #include "cv_key_table.h"
 #include "utils.h"
+#include "settings.h"
 
 
 const std::wstring foldNameXml = L"Annotations";
@@ -286,11 +287,12 @@ int main(int argc, char **argv)
     boxsForm->show();
     data.formBndBox = boxsForm.data();
 
+    std::vector<std::string> classes = tryGetClasses(data.folds.base());
+    if (classes.size() <= 0)
+        classes = { "motorbike", "car", "bike", "person", "bus", };
+
     QScopedPointer<singleOptionsForm> classesForm;
     classesForm.reset(new singleOptionsForm("Classes","#C6ADAD",25,210,265));
-    const std::vector<std::string> classes = {
-        "motorbike", "car", "bike", "person", "bus",
-    };
     classesForm->setOptions(classes);
     classesForm->setCallbackSelectedChange(
         [&data,classes](int selected) -> void
