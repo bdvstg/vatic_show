@@ -274,7 +274,7 @@ int main(int argc, char **argv)
         qApplication.reset(new Application(argc, argv));
     }
 
-    QScopedPointer<singleOptionsForm> boxsForm, classesForm;
+    QScopedPointer<singleOptionsForm> boxsForm;
     boxsForm.reset(new singleOptionsForm("Bounding Boxes", "#FFC4C4",30,270));
     boxsForm->setCallbackSelectedChange(
         [&data](int selected) -> void
@@ -286,6 +286,7 @@ int main(int argc, char **argv)
     boxsForm->show();
     data.formBndBox = boxsForm.data();
 
+    QScopedPointer<singleOptionsForm> classesForm;
     classesForm.reset(new singleOptionsForm("Classes","#C6ADAD",25,210,265));
     const std::vector<std::string> classes = {
         "motorbike", "car", "bike", "person", "bus",
