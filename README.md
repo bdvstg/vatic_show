@@ -12,8 +12,8 @@
 After use VATIC, dump result by pascal format, you can use this program to adjust the result.
 ## vatic_show can
   1. modify bounding box
-        1. change region position/size
-        2. delete/add bounding box
+    1. change region position/size
+    2. delete/add bounding box
   2. change class name
   3. move frame into recycle
   4. browser result
