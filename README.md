@@ -25,9 +25,11 @@ After use VATIC, dump result by pascal format, you can use this program to adjus
 
 ###### Tip:
 output VATIC result by pascal format:
+
   turkic dump VIDEO_ID --output OUTPUT_FOLDER --pascal --pascal-skip 1
 
 --pascal-skip let it output every frame, else it may output a frame per 15 frame in default
+
 if JPEGImage folder is empty, try use sudo
 
 
