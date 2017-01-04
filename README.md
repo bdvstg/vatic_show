@@ -1,11 +1,11 @@
 # vatic_show
 this program is wrote for the one who always complain can't control VATIC happily...
 
-cause VATIC will do interpolation
+###### cause VATIC will do interpolation
 
-she complain bounding box can not follow her way every frame
+###### she complain bounding box can not follow her way every frame
 
-so..., vatic_show has created
+###### so..., vatic_show has created
 
 
 ## function:
